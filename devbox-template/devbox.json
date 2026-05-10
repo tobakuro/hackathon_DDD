@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.7/.schema/devbox.schema.json",
+  "packages": [
+    "git@latest"
+  ],
+  "shell": {
+    "init_hook": [
+      "echo '🚀 Devbox shell に入りました'",
+      "echo '📖 セットアップ手順は docs/1_setup_devbox.md を参照してください'",
+      "echo '📖 サーバー起動手順は docs/2_setup.md を参照してください'",
+      "echo '📖 よく使うコマンドは docs/commands.md を参照してください'"
+    ],
+    "scripts": {
+      "setup": [
+        "echo 'プロジェクト固有のセットアップコマンドをここに記載してください'"
+      ],
+      "dev": [
+        "echo 'フロント/バックエンドの開発サーバー起動コマンドをここに記載してください'"
+      ],
+      "test": [
+        "echo 'テスト実行コマンドをここに記載してください'"
+      ],
+      "lint": [
+        "echo 'Lint実行コマンドをここに記載してください'"
+      ]
+    }
+  },
+  "env": {
+    "PROJECT_ROOT": "$PWD"
+  }
+}

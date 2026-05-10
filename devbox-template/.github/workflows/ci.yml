@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  ci:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Devbox
+        uses: jetify-com/devbox-install-action@v0.13.0
+        with:
+          enable-cache: true
+
+      - name: Verify devbox.json
+        run: devbox version
+
+      # ----------------------------------------------------------------
+      # 以下、プロジェクトに合わせてビルド/テストコマンドを記載してください
+      # ----------------------------------------------------------------
+
+      - name: Install dependencies
+        run: devbox run -- echo "dependency install command here"
+
+      - name: Lint
+        run: devbox run lint || echo "lint script not configured yet"
+
+      - name: Test
+        run: devbox run test || echo "test script not configured yet"
+
+      - name: Build
+        run: devbox run -- echo "build command here"
