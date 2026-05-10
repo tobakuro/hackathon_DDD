@@ -20,7 +20,7 @@
 
 | プレフィックス | 用途 | 例 |
 |---|---|---|
-| `feature/` | 新機能開発 | `feature/login-form` |
+| `feat/` | 新機能開発 | `feat/login-form` |
 | `fix/` | バグ修正 | `fix/login-error` |
 | `refactor/` | リファクタリング | `refactor/api-client` |
 | `docs/` | ドキュメント変更のみ | `docs/update-readme` |
@@ -80,21 +80,21 @@ fix: API呼び出し時のNull参照エラーを修正
 ```
 1. issueを作成 (or アサインされる)
    ↓
-2. develop から feature ブランチを切る
+2. develop から feat ブランチを切る
    git checkout develop
    git pull
-   git checkout -b feature/12-xxx
+   git checkout -b feat/12-xxx
    ↓
 3. 開発・コミット
    ↓
 4. リモートへpush
-   git push -u origin feature/12-xxx
+   git push -u origin feat/12-xxx
    ↓
 5. PRを作成 (develop向け)
    ↓
 6. レビュー → マージ
    ↓
-7. ローカルのfeatureブランチを削除
+7. ローカルのfeatブランチを削除
 ```
 
 ---
