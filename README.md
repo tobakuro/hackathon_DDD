@@ -66,7 +66,6 @@ GitHub上で「**Use this template**」ボタンから新規リポジトリを�
 
 リポジトリ作成後、以下を設定:
 
-- 📖 [docs/github_repo_settings.md](./docs/github_repo_settings.md) - Branch Protection等
 - 📖 [docs/github_labels.md](./docs/github_labels.md) - ラベル一括登録
 
 ---
@@ -89,12 +88,10 @@ GitHub上で「**Use this template**」ボタンから新規リポジトリを�
 | [coding_rules.md](./docs/coding_rules.md) | コーディング規約 |
 | [git_workflow.md](./docs/git_workflow.md) | Git運用ルール |
 | [env_variables.md](./docs/env_variables.md) | 環境変数管理 |
-| [adr/](./docs/adr/) | 技術選定の意思決定記録 |
 
 ### GitHub運用
 | ファイル | 内容 |
 |---|---|
-| [github_repo_settings.md](./docs/github_repo_settings.md) | Branch Protection等の推奨設定 |
 | [github_labels.md](./docs/github_labels.md) | ラベル定義と一括登録コマンド |
 
 ### コミュニティ
@@ -124,7 +121,6 @@ GitHub上で「**Use this template**」ボタンから新規リポジトリを�
 │   ├── release-drafter-config.yml
 │   └── PULL_REQUEST_TEMPLATE.md
 ├── docs/                        # 全mdはここに集約
-│   ├── adr/                     # Architecture Decision Records
 │   ├── 1_setup_devbox.md
 │   ├── 2_setup.md
 │   ├── commands.md
@@ -134,7 +130,6 @@ GitHub上で「**Use this template**」ボタンから新規リポジトリを�
 │   ├── coding_rules.md
 │   ├── git_workflow.md
 │   ├── env_variables.md
-│   ├── github_repo_settings.md
 │   └── github_labels.md
 ├── .env.example
 ├── .gitignore

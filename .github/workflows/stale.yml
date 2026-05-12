@@ -2,7 +2,7 @@ name: Mark Stale Issues and PRs
 
 on:
   schedule:
-    - cron: "0 1 * * *" # 毎日 朝10時 (JST)
+    - cron: "0 0 * * *" # 毎日 朝9時 (JST)
   workflow_dispatch:
 
 permissions:

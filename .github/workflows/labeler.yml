@@ -30,7 +30,6 @@ jobs:
           script: |
             const branch = context.payload.pull_request.head.ref;
             const labelMap = {
-              'feature/': 'enhancement',
               'feat/':    'enhancement',
               'fix/':     'bug',
               'bugfix/':  'bug',

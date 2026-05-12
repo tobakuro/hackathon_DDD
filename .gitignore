@@ -36,7 +36,7 @@ Thumbs.db
 # エディタ
 .vscode/*
 !.vscode/settings.json
-!.vscode/extensions.json
+.vscode/launch.json
 .idea/
 *.swp
 *.swo
@@ -52,3 +52,6 @@ out/
 .nuxt/
 .cache/
 coverage/
+
+# CLAUDE.md
+CLAUDE.md
