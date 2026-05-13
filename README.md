@@ -120,6 +120,9 @@ GitHub上で「**Use this template**」ボタンから新規リポジトリを�
 │   ├── labeler.yml              # ラベル付与ルール
 │   ├── release-drafter-config.yml
 │   └── PULL_REQUEST_TEMPLATE.md
+├── front/                       # Godot 4 プロジェクト（ゲームフロントエンド）
+├── server/                      # Go ゲームサーバー（未実装）
+├── target/                      # 攻撃対象コンテナ（未実装）
 ├── docs/                        # 全mdはここに集約
 │   ├── 1_setup_devbox.md
 │   ├── 2_setup.md
@@ -133,8 +136,10 @@ GitHub上で「**Use this template**」ボタンから新規リポジトリを�
 │   └── github_labels.md
 ├── .env.example
 ├── .gitignore
+├── .gitattributes
 ├── .gitleaks.toml               # Secret検知の除外設定
 ├── devbox.json                  # Devbox設定 + scripts
+├── docker-compose.yml           # コンテナ構成（game-server + target-server）
 ├── README.md
 └── CONTRIBUTING.md
 ```

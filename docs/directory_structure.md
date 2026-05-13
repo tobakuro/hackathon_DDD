@@ -4,7 +4,7 @@
 
 ```
 .
-├── client/                  # Godot 4 プロジェクト（ゲームフロントエンド）
+├── front/                   # Godot 4 プロジェクト（ゲームフロントエンド）
 │   ├── assets/              # VRMモデル・テクスチャ・サウンド
 │   └── scenes/              # Godotシーンファイル
 │
@@ -26,6 +26,6 @@
 
 | ディレクトリ | 担当 | 技術 |
 |---|---|---|
-| `client/` | ゲームUI・3D・VRM・当たり判定 | Godot 4 + godot-vrm |
+| `front/` | ゲームUI・3D・VRM・当たり判定 | Godot 4 + godot-vrm |
 | `server/` | WebSocket・Docker操作・ゲームロジック | Go |
 | `target/` | 攻撃対象（リソース制限付き） | Docker |

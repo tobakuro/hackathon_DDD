@@ -18,11 +18,8 @@ __pycache__/
 venv/
 .pytest_cache/
 
-# Java
-*.class
-target/
-.gradle/
-build/
+# Go
+bin/
 
 # 環境変数
 .env

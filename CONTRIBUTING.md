@@ -30,7 +30,7 @@ devbox run dev
 
 ```
 1. Issueを確認 / 作成
-2. develop から feature ブランチを切る
+2. develop から feat ブランチを切る
 3. 開発・コミット
 4. PR作成 (develop向け)
 5. レビュー → マージ
@@ -98,4 +98,3 @@ docs: READMEのセットアップ手順を更新
 | [docs/coding_rules.md](./docs/coding_rules.md) | コーディング規約 |
 | [docs/git_workflow.md](./docs/git_workflow.md) | Git運用 |
 | [docs/env_variables.md](./docs/env_variables.md) | 環境変数 |
-| [docs/adr/](./docs/adr/) | 技術選定の意思決定記録 (ADR) |

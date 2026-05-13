@@ -52,7 +52,7 @@ Steam を開き、**Godot Engine** を検索してインストールしてくだ
 
 このプロジェクトでは VRM モデルの表示に [godot-vrm](https://github.com/V-Sekai/godot-vrm) アドオンを使用します。
 
-1. Godot エディタを起動し、`client/` フォルダをプロジェクトとして開く
+1. Godot エディタを起動し、`front/` フォルダをプロジェクトとして開く
 2. **AssetLib** タブを開き、`vrm` で検索
 3. **VRM** アドオンをインストールする
 4. **Project** → **Project Settings** → **Plugins** タブで VRM が有効になっていることを確認
@@ -107,7 +107,7 @@ docker compose up --build
 
 ## STEP 7. Godotプロジェクトを開く（Windows）
 
-Godot エディタを起動し、`client/` フォルダをプロジェクトとして開いてください。
+Godot エディタを起動し、`front/` フォルダをプロジェクトとして開いてください。
 
 ---
 
