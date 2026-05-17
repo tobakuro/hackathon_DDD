@@ -18,7 +18,8 @@ docker compose up -d
 docker compose down
 
 # コンテナのログを確認
-docker compose logs -f game-server
+docker compose logs -f target-server
+docker compose logs -f attacker
 
 # リソース使用状況をリアルタイム確認（攻撃の効果確認に使う）
 docker stats
@@ -27,31 +28,40 @@ docker stats
 docker compose restart target-server
 ```
 
-## Go サーバー
+## Go (api / attacker)
 
 ```bash
 # devbox shell に入る
 devbox shell
 
 # 依存関係を整理
-cd server && go mod tidy
+go mod tidy
 
-# サーバーを直接起動（開発時）
-cd server && go run main.go
+# ビルド（api・attacker 両方）
+devbox run build
 
-# ビルド
-cd server && go build -o bin/server .
+# テスト（カバレッジ付き）
+devbox run test
 
-# テスト
-cd server && go test ./...
+# lint
+devbox run lint
+
+# lint 自動修正
+devbox run lint:fix
+
+# フォーマット
+devbox run format
+
+# フォーマットチェックのみ（CI と同じ）
+devbox run format:check
+
+# 型チェック（go vet）
+devbox run typecheck
 ```
 
 ## よく使う確認コマンド
 
 ```bash
-# ゲームサーバーの疎通確認
-curl http://localhost:8080/health
-
 # コンテナ一覧
 docker compose ps
 
