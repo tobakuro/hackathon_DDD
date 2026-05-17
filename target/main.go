@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"sync/atomic"
 )
@@ -11,7 +12,7 @@ var hitCount int64
 func main(){
 	http.HandleFunc("/",func(w http.ResponseWriter, r *http.Request) {
 		current := atomic.AddInt64(&hitCount, 1)
-		fmt.Fprintf(w, "ヒット数: %d\n", current)
+		log.Printf("ヒット数: %d\n", current)
 	})
 	
 	fmt.Println("標的用サーバーが 8080 で起動しました。")

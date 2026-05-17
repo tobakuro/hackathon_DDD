@@ -1,20 +1,22 @@
 services:
-  # ゲームサーバー（Go）
-  game-server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      - DOCKER_HOST=unix:///var/run/docker.sock
-    volumes:
-      # GoサーバーがDockerを操作できるようにソケットをマウント
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - game_external
-    depends_on:
-      - target-server
+# まだゲームサーバー作ってないので一旦コメントアウト
+#   # ゲームサーバー（Go）
+#   game-server:
+#     build:
+#       context: ./server
+#       dockerfile: Dockerfile
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       - DOCKER_HOST=unix:///var/run/docker.sock
+#     volumes:
+#       # GoサーバーがDockerを操作できるようにソケットをマウント
+#       - /var/run/docker.sock:/var/run/docker.sock
+#     networks:
+#       - game_external
+#       - game_internal
+#     depends_on:
+#       - target-server
 
   # 攻撃対象サーバー（ゲームの敵）
   target-server:
@@ -30,6 +32,19 @@ services:
     networks:
       - game_internal  # 外部遮断ネットワークのみ接続
     restart: "no"      # 倒されたら自動再起動しない（ゲームサーバーが制御）
+
+# 攻撃コンテナ
+  attacker:
+    build:
+      context: ./attacker
+      dockerfile: Dockerfile
+    environment:
+      # 対象のホスト名がtarget-server、ポートが8080であることを攻撃コンテナに伝える
+      - TARGET_URL=http://target-server:8080
+    networks:
+      - game_internal # 密室に入らないと標的を殴れません
+    depends_on:
+      - target-server
 
 networks:
   # ゲームサーバー ↔ ブラウザ間の通信用（外部公開）
