@@ -2,7 +2,8 @@
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.7/.schema/devbox.schema.json",
   "packages": [
     "git@latest",
-    "go@latest"
+    "go@latest",
+    "golangci-lint@latest"
   ],
   "shell": {
     "init_hook": [
@@ -20,25 +21,25 @@
         "echo '【TODO】開発サーバー起動コマンドをここに記載'"
       ],
       "build": [
-        "echo '【TODO】ビルドコマンドをここに記載'"
+        "go build ./api/... ./attacker/..."
       ],
       "test": [
-        "echo '【TODO】テストコマンドをここに記載 (例: pnpm test --coverage)'"
+        "go test ./api/... ./attacker/... -cover -coverprofile=coverage/coverage.out"
       ],
       "lint": [
-        "echo '【TODO】lintコマンドをここに記載 (例: pnpm lint)'"
+        "golangci-lint run ./api/... ./attacker/..."
       ],
       "lint:fix": [
-        "echo '【TODO】lint自動修正コマンドをここに記載'"
+        "golangci-lint run --fix ./api/... ./attacker/..."
       ],
       "format": [
-        "echo '【TODO】formatコマンドをここに記載 (例: pnpm prettier --write .)'"
+        "gofmt -w ./api ./attacker"
       ],
       "format:check": [
-        "echo '【TODO】formatチェックコマンドをここに記載 (例: pnpm prettier --check .)'"
+        "test -z \"$(gofmt -l ./api ./attacker)\" || (gofmt -l ./api ./attacker && exit 1)"
       ],
       "typecheck": [
-        "echo '【TODO】型チェックコマンドをここに記載 (例: pnpm tsc --noEmit)'"
+        "go vet ./api/... ./attacker/..."
       ]
     }
   },
