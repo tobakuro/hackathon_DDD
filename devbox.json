@@ -7,11 +7,11 @@
   ],
   "shell": {
     "init_hook": [
+      "export PATH=\"$PWD/.devbox/nix/profile/default/bin:$PATH\"",
       "echo '🚀 Devbox shell に入りました'",
       "echo '📖 セットアップ手順は docs/1_setup_devbox.md を参照'",
       "echo '📖 サーバー起動手順は docs/2_setup.md を参照'",
-      "echo '📖 よく使うコマンドは docs/commands.md を参照'",
-      "[ -f server/go.mod ] && (cd server && go mod tidy) || true"
+      "echo '📖 よく使うコマンドは docs/commands.md を参照'"
     ],
     "scripts": {
       "setup": [

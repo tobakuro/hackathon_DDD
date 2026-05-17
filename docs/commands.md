@@ -36,20 +36,28 @@ devbox shell
 
 # 依存関係を整理
 go mod tidy
+```
 
+### ビルド・テスト
+
+```bash
 # ビルド（api・attacker 両方）
 devbox run build
 
 # テスト（カバレッジ付き）
 devbox run test
+```
 
-# lint
+### Lint・フォーマット・型チェック
+
+```bash
+# lint（golangci-lint）
 devbox run lint
 
 # lint 自動修正
 devbox run lint:fix
 
-# フォーマット
+# フォーマット（gofmt で上書き）
 devbox run format
 
 # フォーマットチェックのみ（CI と同じ）
