@@ -1,13 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os/exec"
 	"strings"
-	"bytes"
 )
 
 // 1. 増やす命令を受け取るためのデータ構造
@@ -39,7 +39,7 @@ func scaleHandler(w http.ResponseWriter, r *http.Request) {
 	// ここで docker compose up --scale attacker=N -d を実行
 	cmd := exec.Command("docker", "compose", "up", "--scale", fmt.Sprintf("attacker=%d", req.Count), "-d")
 	// 注意: docker-compose.yml があるディレクトリを指定します
-	cmd.Dir = "./" 
+	cmd.Dir = "./"
 
 	if err := cmd.Run(); err != nil {
 		log.Printf("スケール失敗: %v\n", err)
@@ -48,7 +48,7 @@ func scaleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "コンテナを %d 個に変更しましたよ\n", req.Count)
+	_, _ = fmt.Fprintf(w, "コンテナを %d 個に変更しましたよ\n", req.Count)
 }
 
 // /attack へのリクエストを処理する関数
@@ -79,7 +79,7 @@ func attackHandler(w http.ResponseWriter, r *http.Request) {
 
 		containerIDs := strings.Fields(out.String())
 		if len(containerIDs) == 0 {
-			fmt.Fprintln(w, "attackerが1つも稼働していません")
+			_, _ = fmt.Fprintln(w, "attackerが1つも稼働していません")
 			return
 		}
 
@@ -89,21 +89,21 @@ func attackHandler(w http.ResponseWriter, r *http.Request) {
 				// コンテナの中で、自分自身(127.0.0.1)のAPIをwgetコマンドで叩かせる
 				targetUrl := fmt.Sprintf("http://127.0.0.1:80/fire?count=%d", count)
 				execCmd := exec.Command("docker", "exec", containerID, "wget", "-qO-", targetUrl)
-				
+
 				if err := execCmd.Run(); err != nil {
 					log.Printf("attacker(%s)への命令伝達に失敗: %v\n", containerID, err)
 				}
 			}(id, req.Count)
-			
+
 			log.Printf("attacker(%s)に %d 回の攻撃を指示しました\n", id[:8], req.Count)
-		 }
-		
+		}
+
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "%d 体のattackerに攻撃命令を下しました。\n", len(containerIDs))
-		
+		_, _ = fmt.Fprintf(w, "%d 体のattackerに攻撃命令を下しました。\n", len(containerIDs))
+
 	} else {
 		w.WriteHeader(http.StatusNotImplemented)
-		fmt.Fprintf(w, "指定コンテナへの個別命令はまだ未実装\n")
+		_, _ = fmt.Fprintf(w, "指定コンテナへの個別命令はまだ未実装\n")
 	}
 }
 
