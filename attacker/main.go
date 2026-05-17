@@ -2,29 +2,47 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
-	"time"
+	"strconv"
 )
 
 func main() {
 	targetURL := os.Getenv("TARGET_URL")
 	if targetURL == "" {
 		// 一応デフォルト値(docker-compose.ymlの環境変数で上書きされる)
-		targetURL = "http://target-server:8080" 
+		targetURL = "http://target-server:8080"
 	}
 
-	fmt.Printf(" %s を攻撃開始\n", targetURL)
-
-	for {
-		resp, err := http.Get(targetURL)
-		if err != nil {
-			fmt.Printf("攻撃失敗: %v\n", err)
-		} else {
-			fmt.Printf("攻撃成功: %d\n", resp.StatusCode)
-			resp.Body.Close()
+	// 司令塔からの「撃て」を受け取るAPI
+	http.HandleFunc("/fire", func(w http.ResponseWriter, r *http.Request) {
+		// クエリパラメータ ?count=N を取得（デフォルトは1）
+		countStr := r.URL.Query().Get("count")
+		count := 1
+		if c, err := strconv.Atoi(countStr); err == nil && c > 0 {
+			count = c
 		}
-		// とりあえず100ミリ秒に1回にしておきます
-		time.Sleep(100 * time.Millisecond) 
+
+		log.Printf("命令を受信。標的(%s)に %d 回攻撃します。\n", targetURL, count)
+
+		// 指定回数だけ標的を殴る
+		for i := 0; i < count; i++ {
+			resp, err := http.Get(targetURL)
+			if err != nil {
+				log.Printf("攻撃失敗: %v\n", err)
+			} else {
+				log.Printf("攻撃成功(ステータス: %d)\n", resp.StatusCode)
+				resp.Body.Close()
+			}
+		}
+
+		fmt.Fprintf(w, "%d 回の攻撃、完了しました。\n", count)
+	})
+
+	log.Println("攻撃用コンテナ、命令待機中です（ポート80で待機）")
+	// コンテナ内で80番ポートを使って司令塔からの通信を待ち受け
+	if err := http.ListenAndServe(":80", nil); err != nil {
+		log.Fatal(err)
 	}
 }
