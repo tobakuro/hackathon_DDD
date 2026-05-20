@@ -23,6 +23,7 @@ services:
     build:
       context: ./target
       dockerfile: Dockerfile
+    container_name: target-server #cAdvisorでアクセスするために固定名を付与
     # リソース制限（攻略難易度の設定）
     deploy:
       resources:
@@ -45,6 +46,22 @@ services:
       - game_internal # 密室に入らないと標的を殴れません
     depends_on:
       - target-server
+
+  # 監視用のcAdvisorコンテナ
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    container_name: cadvisor
+    privileged: true
+    ports:
+      - "8081:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - game_external
 
 networks:
   # ゲームサーバー ↔ ブラウザ間の通信用（外部公開）
