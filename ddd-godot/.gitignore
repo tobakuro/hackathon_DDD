@@ -52,13 +52,3 @@ coverage/
 
 # CLAUDE.md
 CLAUDE.md
-
-# Godot cache
-ddd-godot/.godot/
-ddd-godot/front/.godot/
-
-# Android build cache
-ddd-godot/android/build/
-
-# Godot uid
-*.uid

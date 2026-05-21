@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://b0sqyjy0v2r0q"]
+
+[ext_resource type="Script" uid="uid://cwkthe2g7nnuc" path="res://node_3d.gd" id="1_a202f"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_a202f"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_noarx"]
+size = Vector3(10, 0.1, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_a202f"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_a0tk4"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_r3fl7"]
+
+[node name="XROrigin3D" type="XROrigin3D" unique_id=1838473618]
+script = ExtResource("1_a202f")
+
+[node name="XRCamera3D" type="XRCamera3D" parent="." unique_id=1596671828]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1409783589]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+mesh = SubResource("BoxMesh_a202f")
+
+[node name="Floor" type="StaticBody3D" parent="." unique_id=106090803]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor" unique_id=340587494]
+mesh = SubResource("BoxMesh_noarx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=104453371]
+shape = SubResource("BoxShape3D_a202f")
+
+[node name="LeftHand" type="XRController3D" parent="." unique_id=1550046526]
+tracker = &"left_hand"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="LeftHand" unique_id=822477155]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+mesh = SubResource("BoxMesh_a0tk4")
+
+[node name="RightHand" type="XRController3D" parent="." unique_id=1717411537]
+tracker = &"right_hand"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RightHand" unique_id=203714587]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("BoxMesh_r3fl7")
