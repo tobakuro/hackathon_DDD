@@ -28,8 +28,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: 256M
+          cpus: "0.05"
+          memory: 64M
     networks:
       - game_internal  # 外部遮断ネットワークのみ接続
     restart: "no"      # 倒されたら自動再起動しない（ゲームサーバーが制御）

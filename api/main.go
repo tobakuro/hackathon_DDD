@@ -21,6 +21,19 @@ type AttackRequest struct {
 	Count  int    `json:"count"`
 }
 
+// 3. 今の攻撃対象コンテナの情報を渡すためのデータ構造
+type NowTarget struct {
+	Memory  float64 `json:"memory"`
+	CPU     float64 `json:"cpu"`
+}
+
+// 4. 攻撃対象コンテナの時系列情報(リザルト用)を渡すためのデータ構造
+type AttackHistory struct {
+	Timestamp string `json:"timestamp"`
+	Memory    float64    `json:"memory"`
+	CPU       float64    `json:"cpu"`
+}
+
 // /scale へのリクエストを処理する関数
 func scaleHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -107,9 +120,37 @@ func attackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// NowTargetへのリクエストを処理する関数
+func nowTargetHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// 一旦ダミーデータを返すだけ
+	dummyData := NowTarget{
+		Memory: 75.5,
+		CPU:    60.3,
+	}
+
+	json.NewEncoder(w).Encode(dummyData)
+}
+
+// AttckHistoryへのリクエストを処理する関数
+func attackHistoryHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// 一旦ダミーデータを返すだけ
+	dummyHistory := []AttackHistory{
+		{Timestamp: "2024-06-01T12:00:00Z", Memory: 70.2, CPU: 55.1},
+		{Timestamp: "2024-06-01T12:01:00Z", Memory: 80.5, CPU: 65.3},
+		{Timestamp: "2024-06-01T12:02:00Z", Memory: 90.1, CPU: 75.0},
+	}
+
+	json.NewEncoder(w).Encode(dummyHistory)
+}
 func main() {
 	http.HandleFunc("/scale", scaleHandler)
 	http.HandleFunc("/attack", attackHandler)
+	http.HandleFunc("/now-target", nowTargetHandler)
+	http.HandleFunc("/attack-history", attackHistoryHandler)
 
 	log.Println("司令塔APIがポート9000で稼働開始")
 	if err := http.ListenAndServe(":9000", nil); err != nil {
