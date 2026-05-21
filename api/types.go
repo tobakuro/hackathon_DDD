@@ -23,3 +23,8 @@ type AttackHistory struct {
 	Memory    float64 `json:"memory"`
 	CPU       float64 `json:"cpu"`
 }
+
+// 5. リスタート命令を受け取った後の完了レスポンスのデータ構造
+type RestartResponse struct {
+	Message string `json:"message"`
+}

@@ -8,6 +8,10 @@ import (
 	"net/http"
 	"os/exec"
 	"strings"
+	"context"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/client"
 )
 
 func registerRoutes() {
@@ -15,6 +19,7 @@ func registerRoutes() {
 	http.HandleFunc("/attack", attackHandler)
 	http.HandleFunc("/now-target", nowTargetHandler)
 	http.HandleFunc("/attack-history", attackHistoryHandler)
+	http.HandleFunc("/restart", restartHandler)
 }
 
 // /scale へのリクエストを処理する関数
@@ -117,4 +122,72 @@ func attackHistoryHandler(w http.ResponseWriter, r *http.Request) {
 
 	history := getAttackHistory()
 	json.NewEncoder(w).Encode(history)
+}
+
+// /restart へのリクエストを処理する関数
+func restartHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "POSTで送ってください", http.StatusMethodNotAllowed)
+		return
+	}
+
+	log.Println("リスタート命令を受信しました")
+
+	// ここで docker compose down && docker compose up -d を実行
+	cmd := exec.Command("docker", "compose", "down")
+	cmd.Dir = "./"
+	if err := cmd.Run(); err != nil {
+		log.Printf("リスタート失敗: %v\n", err)
+		http.Error(w, "Dockerの操作に失敗しました", http.StatusInternalServerError)
+		return
+	}
+
+	cmd = exec.Command("docker", "compose", "up", "-d")
+	cmd.Dir = "./"
+	if err := cmd.Run(); err != nil {
+		log.Printf("リスタート失敗: %v\n", err)
+		http.Error(w, "Dockerの操作に失敗しました", http.StatusInternalServerError)
+		return
+	}
+
+	//target-serverコンテナのIDを取得
+	containerID := getContainerID("target-server")
+	if containerID == "" {
+		log.Printf("target-serverコンテナが見つかりませんでした\n")
+		http.Error(w, "target-serverコンテナが見つかりませんでした", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("target-serverコンテナを再起動しました (ID: %s)\n", containerID)
+	
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(RestartResponse{Message: "コンテナを再起動しました"})
+}
+// リスタートの時に使う関数
+func getContainerID(containerName string) string {
+	// Dockerクライアントの初期化
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		log.Fatalf("Dockerクライアントの作成に失敗しました: %v", err)
+	}
+	defer cli.Close()
+
+	// フィルターの作成 (name=target-server)
+	f := filters.NewArgs()
+	// 正確に一致させるために正規表現のアンカーを使用
+	f.Add("name", "^/"+containerName+"$")
+
+	// コンテナ一覧の取得
+	containers, err := cli.ContainerList(context.Background(), container.ListOptions{
+		Filters: f,
+	})
+	if err != nil {
+		log.Fatalf("コンテナの取得に失敗しました: %v", err)
+	}
+
+	if len(containers) == 0 {
+		return "" // 見つからなかった場合
+	}
+
+	return containers[0].ID
 }
