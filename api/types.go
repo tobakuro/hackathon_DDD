@@ -1,5 +1,6 @@
 package main
 
+import "sync"
 // 1. 増やす命令を受け取るためのデータ構造
 type ScaleRequest struct {
 	Count int `json:"count"`
@@ -15,6 +16,20 @@ type AttackRequest struct {
 type NowTarget struct {
 	Memory float64 `json:"memory"`
 	CPU    float64 `json:"cpu"`
+	mu     sync.RWMutex
+}
+
+type DockerStats struct {
+	MemoryStats struct {
+		Usage uint64 `json:"usage"`
+		Limit uint64 `json:"limit"`
+	} `json:"memory_stats"`
+	CpuStats struct {
+		CpuUsage struct {
+			TotalUsage uint64 `json:"total_usage"`
+		} `json:"cpu_usage"`
+		SystemCpuUsage uint64 `json:"system_cpu_usage"`
+	} `json:"cpu_stats"`
 }
 
 // 4. 攻撃対象コンテナの時系列情報(リザルト用)を渡すためのデータ構造

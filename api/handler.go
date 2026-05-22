@@ -11,7 +11,7 @@ import (
 	"context"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/client"
+	"hackathon_DDD/state"
 )
 
 func registerRoutes() {
@@ -157,6 +157,8 @@ func restartHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "target-serverコンテナが見つかりませんでした", http.StatusInternalServerError)
 		return
 	}
+	// ステートに保存
+	state.SetContainerID(containerID)
 
 	log.Printf("target-serverコンテナを再起動しました (ID: %s)\n", containerID)
 	
@@ -165,12 +167,6 @@ func restartHandler(w http.ResponseWriter, r *http.Request) {
 }
 // リスタートの時に使う関数
 func getContainerID(containerName string) string {
-	// Dockerクライアントの初期化
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		log.Fatalf("Dockerクライアントの作成に失敗しました: %v", err)
-	}
-	defer cli.Close()
 
 	// フィルターの作成 (name=target-server)
 	f := filters.NewArgs()
