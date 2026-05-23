@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.38.0 (HEAD)
+  labels:
+    io.kompose.service: attacker
+  name: attacker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: attacker
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.38.0 (HEAD)
+      labels:
+        io.kompose.service: attacker
+    spec:
+      containers:
+        - env:
+            - name: TARGET_URL
+              value: http://target-server:8080
+          image: attacker
+          name: attacker
+      restartPolicy: Always
