@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://3npusto0h0x6"]
+
+[ext_resource type="Texture2D" uid="uid://y043up0102fe" path="res://model/11f8166e-04b5-43a1-a469-3aaae30aa7b8.png" id="1_5sp1x"]
+
+[node name="Node3D" type="Node3D" unique_id=1638679725]
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=2104674685]
+billboard = 1
+texture = ExtResource("1_5sp1x")
+
+[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=1717497019]
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1689711103]
