@@ -12,6 +12,9 @@ func streamingTarget() {
     for {
         stats, err := cli.ContainerStats(context.Background(), "target-server", true)
         if err != nil {
+            targetData.mu.Lock()
+            targetData.IsAlive = false
+            targetData.mu.Unlock()
             time.Sleep(1 * time.Second) // エラーが発生した場合は少し待ってから再接続を試みる
             continue
         }
@@ -21,9 +24,12 @@ func streamingTarget() {
             // 1. データ受信 (待ち時間発生、ロックしない)
             var stats DockerStats
             if err := decoder.Decode(&stats); err != nil {
+                targetData.mu.Lock()
+                targetData.IsAlive = false
+                targetData.mu.Unlock()
                 break 
             }
-        
+
             if preSystemCpuUsage != 0 {
                 newSystemCpuUsage := stats.CpuStats.SystemCpuUsage
                 newTargetCpuUsage := stats.CpuStats.CpuUsage.TotalUsage
@@ -33,8 +39,13 @@ func streamingTarget() {
                 newMemory := float64(stats.MemoryStats.Usage) / float64(stats.MemoryStats.Limit) * 100.0
                 // 4. 安全に書き込み (一瞬だけロックする)
                 targetData.mu.Lock()
+                targetData.IsAlive = true
                 targetData.CPU = newCPU
                 targetData.Memory = newMemory
+                targetData.mu.Unlock()
+            } else {
+                targetData.mu.Lock()
+                targetData.IsAlive = true
                 targetData.mu.Unlock()
             }
             // 4. 次のループの計算のために履歴を更新

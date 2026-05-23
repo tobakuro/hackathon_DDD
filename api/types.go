@@ -16,6 +16,7 @@ type AttackRequest struct {
 type NowTarget struct {
 	Memory float64 `json:"memory"`
 	CPU    float64 `json:"cpu"`
+	IsAlive bool    `json:"is_alive"`
 	mu     sync.RWMutex
 }
 
