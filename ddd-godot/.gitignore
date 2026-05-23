@@ -52,3 +52,9 @@ coverage/
 
 # CLAUDE.md
 CLAUDE.md
+
+# Godot 自動生成ファイル（再生成可能なため除外）
+.godot/
+android/build/
+*.translation
+*Zone.Identifier
