@@ -1,6 +1,7 @@
 package main
 
 import "sync"
+
 // 1. 増やす命令を受け取るためのデータ構造
 type ScaleRequest struct {
 	Count int `json:"count"`
@@ -14,10 +15,10 @@ type AttackRequest struct {
 
 // 3. 今の攻撃対象コンテナの情報を渡すためのデータ構造
 type NowTarget struct {
-	Memory float64 `json:"memory"`
-	CPU    float64 `json:"cpu"`
+	Memory  float64 `json:"memory"`
+	CPU     float64 `json:"cpu"`
 	IsAlive bool    `json:"is_alive"`
-	mu     sync.RWMutex
+	mu      sync.RWMutex
 }
 
 type DockerStats struct {

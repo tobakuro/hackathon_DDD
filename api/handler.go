@@ -2,16 +2,16 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
+	"hackathon_DDD/state"
 	"log"
 	"net/http"
 	"os/exec"
 	"strings"
-	"context"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/filters"
-	"hackathon_DDD/state"
 )
 
 func registerRoutes() {
@@ -49,7 +49,7 @@ func scaleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "コンテナを %d 個に変更しましたよ\n", req.Count)
+	_, _ = fmt.Fprintf(w, "コンテナを %d 個に変更しましたよ\n", req.Count)
 }
 
 // /attack へのリクエストを処理する関数
@@ -80,7 +80,7 @@ func attackHandler(w http.ResponseWriter, r *http.Request) {
 
 		containerIDs := strings.Fields(out.String())
 		if len(containerIDs) == 0 {
-			fmt.Fprintln(w, "attackerが1つも稼働していません")
+			_, _ = fmt.Fprintln(w, "attackerが1つも稼働していません")
 			return
 		}
 
@@ -100,11 +100,11 @@ func attackHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "%d 体のattackerに攻撃命令を下しました。\n", len(containerIDs))
+		_, _ = fmt.Fprintf(w, "%d 体のattackerに攻撃命令を下しました。\n", len(containerIDs))
 
 	} else {
 		w.WriteHeader(http.StatusNotImplemented)
-		fmt.Fprintf(w, "指定コンテナへの個別命令はまだ未実装\n")
+		_, _ = fmt.Fprintf(w, "指定コンテナへの個別命令はまだ未実装\n")
 	}
 }
 
@@ -118,7 +118,7 @@ func nowTargetHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	data := getNowTarget()
-	json.NewEncoder(w).Encode(data)
+	_ = json.NewEncoder(w).Encode(data)
 }
 
 // AttckHistoryへのリクエストを処理する関数
@@ -131,7 +131,7 @@ func attackHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	history := getAttackHistory()
-	json.NewEncoder(w).Encode(history)
+	_ = json.NewEncoder(w).Encode(history)
 }
 
 // /restart へのリクエストを処理する関数
@@ -176,10 +176,11 @@ func restartHandler(w http.ResponseWriter, r *http.Request) {
 	state.SetContainerID(containerID)
 
 	log.Printf("target-serverコンテナを再起動しました (ID: %s)\n", containerID)
-	
+
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(RestartResponse{Message: "コンテナを再起動しました"})
+	_ = json.NewEncoder(w).Encode(RestartResponse{Message: "コンテナを再起動しました"})
 }
+
 // リスタートの時に使う関数
 func getContainerID(containerName string) (string, error) {
 
