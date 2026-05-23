@@ -16,6 +16,11 @@ func main() {
 		log.Fatalf("Dockerクライアントの作成に失敗しました: %v", err)
 	}
 	defer cli.Close()
+
+	// ターゲットのリソース使用率をストリーミングで取得するゴルーチンを開始
+	go streamingTarget()
+
+	// HTTPサーバーのルートを登録
 	registerRoutes()
 
 	log.Println("司令塔APIがポート9000で稼働開始")
