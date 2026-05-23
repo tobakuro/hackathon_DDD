@@ -33,12 +33,17 @@ services:
       - LLAMA_SERVER_ARGS=--timeout 600
       - SCREAM_MAX_TOKENS=64
       - SCREAM_TIMEOUT=120s
+      - SOUND_SECONDS=10
+      - SOUND_SR=48000
+      - SOUND_CHANNELS=8
+      - SOUND_BITS_PER_SAMPLE=24
+      - SOUND_MAX_BUFFERS=1000
     # リソース制限（攻略難易度の設定）
     deploy:
       resources:
         limits:
           cpus: "1.0"
-          memory: 0.5G
+          memory: "335544320"
     volumes:
       - ./models:/models:ro
     networks:
