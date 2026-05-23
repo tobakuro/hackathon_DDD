@@ -85,13 +85,38 @@ kind create cluster
 
 # クラスター情報確認
 kubectl cluster-info --context kind-kind
+```
 
+### イメージのビルドとクラスターへの読み込み（初回 or コード変更時）
+
+kindはローカルのDockerイメージを直接参照できないため、明示的に読み込む必要がある。
+
+```bash
+# イメージをビルド
+docker build -t target-server ./target
+docker build -t attacker ./attacker
+
+# kindクラスターにイメージを読み込む
+kind load docker-image target-server
+kind load docker-image attacker
+```
+
+### Manifestの適用・削除
+
+```bash
 # Manifestを適用（ゲーム関連）
 kubectl apply -f manifests/game/
 
 # Manifestを適用（監視スタック）
 kubectl apply -f manifests/monitoring/
 
+# 削除
+kubectl delete -f manifests/game/
+```
+
+### 状態確認・デバッグ
+
+```bash
 # Pod一覧と状態確認
 kubectl get pods
 
@@ -103,7 +128,18 @@ kubectl describe pod <pod-name>
 
 # TUIで全リソースを確認
 k9s
+```
 
-# クラスター削除
+### コード変更後の反映
+
+```bash
+docker build -t target-server ./target
+kind load docker-image target-server
+kubectl rollout restart deployment/target-server
+```
+
+### クラスター削除
+
+```bash
 kind delete cluster
 ```
