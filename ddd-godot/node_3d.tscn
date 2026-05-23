@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://gkbuwscmseqn" path="res://node_3d.gd" id="1_a202f"]
 [ext_resource type="Script" uid="uid://bwu8gic52xffx" path="res://area_3d.gd" id="2_a0tk4"]
 [ext_resource type="PackedScene" uid="uid://bigwujfwndedx" path="res://model/moby_dock_docker_whale.glb" id="2_noarx"]
+[ext_resource type="Script" path="res://scream_display.gd" id="3_scream"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_a0tk4"]
 
@@ -23,6 +24,9 @@ size = Vector3(10, 0.1, 10)
 
 [node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=1838473618]
 script = ExtResource("1_a202f")
+
+[node name="ScreamDisplay" type="Node3D" parent="." unique_id=1890242351]
+script = ExtResource("3_scream")
 
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1596671828]
 
