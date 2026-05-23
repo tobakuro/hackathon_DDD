@@ -160,8 +160,13 @@ func restartHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//target-serverコンテナのIDを取得
-	containerID := getContainerID("target-server")
+	// target-serverコンテナのIDを取得
+	containerID, err := getContainerID("target-server")
+	if err != nil {
+		log.Printf("target-serverコンテナ取得中にエラー: %v\n", err)
+		http.Error(w, "Dockerの操作に失敗しました", http.StatusInternalServerError)
+		return
+	}
 	if containerID == "" {
 		log.Printf("target-serverコンテナが見つかりませんでした\n")
 		http.Error(w, "target-serverコンテナが見つかりませんでした", http.StatusInternalServerError)
@@ -176,7 +181,7 @@ func restartHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(RestartResponse{Message: "コンテナを再起動しました"})
 }
 // リスタートの時に使う関数
-func getContainerID(containerName string) string {
+func getContainerID(containerName string) (string, error) {
 
 	// フィルターの作成 (name=target-server)
 	f := filters.NewArgs()
@@ -188,12 +193,13 @@ func getContainerID(containerName string) string {
 		Filters: f,
 	})
 	if err != nil {
-		log.Fatalf("コンテナの取得に失敗しました: %v", err)
+		log.Printf("コンテナの取得に失敗しました: %v\n", err)
+		return "", err
 	}
 
 	if len(containers) == 0 {
-		return "" // 見つからなかった場合
+		return "", nil // 見つからなかった場合
 	}
 
-	return containers[0].ID
+	return containers[0].ID, nil
 }
