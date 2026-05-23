@@ -1,13 +1,49 @@
 [gd_scene format=3 uid="uid://3npusto0h0x6"]
 
-[ext_resource type="Texture2D" uid="uid://y043up0102fe" path="res://model/11f8166e-04b5-43a1-a469-3aaae30aa7b8.png" id="1_5sp1x"]
+[ext_resource type="PackedScene" uid="uid://bigwujfwndedx" path="res://model/moby_dock_docker_whale.glb" id="1_nixs3"]
+[ext_resource type="PackedScene" uid="uid://38ift65hhe8n" path="res://model/go_gopher.glb" id="2_3887r"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_11ulj"]
+size = Vector3(10, 0.1, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7ye7g"]
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_jlton"]
+turbidity = 14.93
+sun_disk_scale = 0.0
+ground_color = Color(0.08405315, 0.07656927, 0.058809012, 1)
+energy_multiplier = 6.06
+
+[sub_resource type="Sky" id="Sky_e17kp"]
+sky_material = SubResource("PhysicalSkyMaterial_jlton")
+
+[sub_resource type="Environment" id="Environment_6v0qm"]
+background_mode = 2
+background_energy_multiplier = 0.89
+sky = SubResource("Sky_e17kp")
+sky_rotation = Vector3(0, 0.04363323, 0)
 
 [node name="Node3D" type="Node3D" unique_id=1638679725]
 
-[node name="Sprite3D" type="Sprite3D" parent="." unique_id=2104674685]
-billboard = 1
-texture = ExtResource("1_5sp1x")
+[node name="Camera3D" type="Camera3D" parent="." unique_id=631409980]
+transform = Transform3D(-0.99816245, 0, -0.06059566, 0, 1, 0, 0.06059566, 0, -0.99816245, 0, 0, -4.458373)
 
-[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=1717497019]
+[node name="Sketchfab_Scene" parent="." unique_id=132899317 instance=ExtResource("1_nixs3")]
+transform = Transform3D(-0.9999833, 0, 0.005794383, 0, 1, 0, -0.005794383, 0, -0.9999833, -2.6885219, 0, -0.10491133)
 
-[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1689711103]
+[node name="Sketchfab_Scene2" parent="." unique_id=1514118814 instance=ExtResource("2_3887r")]
+transform = Transform3D(-0.82637364, 0, -0.5631223, 0, 1, 0, 0.5631223, 0, -0.82637364, 3.323163, 0, 0.106841326)
+
+[node name="Floor" type="StaticBody3D" parent="." unique_id=1112107707]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.2586367, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor" unique_id=1003324516]
+transform = Transform3D(7.499551, 0, 0, 0, 1, 0, 0, 0, 6.8269424, 0.5858965, 0, -5.3594184)
+mesh = SubResource("BoxMesh_11ulj")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=368011827]
+transform = Transform3D(-0.99998665, 0, -0.005166182, 0, 1, 0, 0.005166182, 0, -0.99998665, 0.9835715, 0, -4.7609663)
+shape = SubResource("BoxShape3D_7ye7g")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1768195862]
+environment = SubResource("Environment_6v0qm")
