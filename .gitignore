@@ -62,3 +62,6 @@ ddd-godot/android/build/
 
 # Godot uid
 *.uid*:Zone.Identifier
+
+# LLM Models
+models/

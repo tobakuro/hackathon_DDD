@@ -24,15 +24,27 @@ services:
       context: ./target
       dockerfile: Dockerfile
     container_name: target-server #cAdvisorでアクセスするために固定名を付与
+    ports:
+      - "8082:8080"
+    environment:
+      - LLAMA_MODEL_PATH=/models/qwen2.5-0.5b-instruct-q4_k_m.gguf
+      - LLAMA_SERVER_PORT=8081
+      - LLAMA_SERVER_URL=http://127.0.0.1:8081
+      - LLAMA_SERVER_ARGS=--timeout 600
+      - SCREAM_MAX_TOKENS=32
+      - SCREAM_TIMEOUT=120s
     # リソース制限（攻略難易度の設定）
     deploy:
       resources:
         limits:
-          cpus: "0.05"
-          memory: 64M
+          cpus: "1.0"
+          memory: 3G
+    volumes:
+      - ./models:/models:ro
     networks:
-      - game_internal  # 外部遮断ネットワークのみ接続
-    restart: "always"      # 倒されたら自動再起動しない（ゲームサーバーが制御）
+      - game_internal  # 外部遮断ネットワーク
+      - game_external  # ホスト/Godotからの接続用
+    restart: "no"      # 倒されたら自動再起動しない（ゲームサーバーが制御）
 
 # 攻撃コンテナ
   attacker:
