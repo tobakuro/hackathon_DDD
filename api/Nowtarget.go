@@ -60,21 +60,16 @@ func streamingTarget() {
 			preSystemCpuUsage = stats.CpuStats.SystemCpuUsage
 			preTargetCpuUsage = stats.CpuStats.CpuUsage.TotalUsage
 		}
-		_ = stats.Body.Close()      // ストリームを閉じる
+		stats.Body.Close()          // ストリームを閉じる
 		time.Sleep(1 * time.Second) // エラーが発生した場合は少し待ってから再接続を試みる
 	}
 }
 
-type NowTargetSnapshot struct {
-	Memory  float64 `json:"memory"`
-	CPU     float64 `json:"cpu"`
-	IsAlive bool    `json:"is_alive"`
-}
-
-func getNowTarget() NowTargetSnapshot {
+func getNowTarget() NowTarget {
 	targetData.mu.RLock()
 	defer targetData.mu.RUnlock()
-	return NowTargetSnapshot{
+	// mutex 自体は返さず、JSON 化に必要な値だけをコピーして返す
+	return NowTarget{
 		Memory:  targetData.Memory,
 		CPU:     targetData.CPU,
 		IsAlive: targetData.IsAlive,

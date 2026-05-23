@@ -18,22 +18,27 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+
+	"hackathon_DDD/target/sound"
 )
 
 var hitCount int64
 var screamSeq uint64
 
+// in-memory scream buffers (WAV data)
+// sound buffers live in package sound
+
 type Config struct {
-	ListenAddr        string
-	LlamaServerURL    string
-	LlamaServerBin    string
-	LlamaModelPath    string
-	LlamaServerPort   string
-	LlamaExtraArgs    string
-	ScreamPrompt      string
-	ScreamMaxTokens   int
-	ScreamTimeout     time.Duration
-	FallbackScream    string
+	ListenAddr      string
+	LlamaServerURL  string
+	LlamaServerBin  string
+	LlamaModelPath  string
+	LlamaServerPort string
+	LlamaExtraArgs  string
+	ScreamPrompt    string
+	ScreamMaxTokens int
+	ScreamTimeout   time.Duration
+	FallbackScream  string
 }
 
 type ScreamEvent struct {
@@ -284,18 +289,20 @@ func emitChars(h *hub, id string, chunk string) {
 	}
 }
 
+
 func hitHandler(h *hub, gen ScreamGenerator, cfg Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		current := atomic.AddInt64(&hitCount, 1)
 		log.Printf("ヒット数: %d", current)
+
+		id := atomic.AddUint64(&screamSeq, 1)
+		idStr := strconv.FormatUint(id, 10)
+		broadcastEvent(h, ScreamEvent{ID: idStr, Type: "start", Hit: current})
+
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("hit"))
 
-		id := atomic.AddUint64(&screamSeq, 1)
-		go func(screamID uint64, hit int64) {
-			idStr := strconv.FormatUint(screamID, 10)
-			broadcastEvent(h, ScreamEvent{ID: idStr, Type: "start", Hit: hit})
-
+		go func() {
 			ctx, cancel := context.WithTimeout(context.Background(), cfg.ScreamTimeout)
 			defer cancel()
 			err := gen.Stream(ctx, cfg.ScreamPrompt, cfg.ScreamMaxTokens, func(chunk string) {
@@ -305,8 +312,10 @@ func hitHandler(h *hub, gen ScreamGenerator, cfg Config) http.HandlerFunc {
 				broadcastEvent(h, ScreamEvent{ID: idStr, Type: "error", Message: err.Error()})
 				return
 			}
+
+			sound.SynthesizeAndStore(idStr)
 			broadcastEvent(h, ScreamEvent{ID: idStr, Type: "end"})
-		}(id, current)
+		}()
 	}
 }
 
@@ -327,6 +336,7 @@ func loadConfig() Config {
 		FallbackScream:  getEnv("FALLBACK_SCREAM", "ギャアアァァ!!"),
 	}
 }
+
 
 func getEnv(key, fallback string) string {
 	value := strings.TrimSpace(os.Getenv(key))
@@ -403,6 +413,13 @@ func startLlamaServer(cfg Config) {
 
 func main() {
 	cfg := loadConfig()
+	// read sound config and initialize
+	soundSR := getEnvInt("SOUND_SR", 16000)
+	soundSeconds := getEnvInt("SOUND_SECONDS", 10)
+	soundChannels := getEnvInt("SOUND_CHANNELS", 2)
+	soundBitsPerSample := getEnvInt("SOUND_BITS_PER_SAMPLE", 24)
+	soundMax := getEnvInt("SOUND_MAX_BUFFERS", 1000)
+	sound.Init(soundSR, soundSeconds, soundChannels, soundBitsPerSample, soundMax)
 	go startLlamaServer(cfg)
 
 	h := newHub()
@@ -410,6 +427,7 @@ func main() {
 	gen := newGenerator(cfg)
 
 	http.HandleFunc("/", hitHandler(h, gen, cfg))
+	http.HandleFunc("/scream/", sound.Handler)
 	http.HandleFunc("/ws", wsHandler(h))
 	http.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
