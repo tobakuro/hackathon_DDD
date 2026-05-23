@@ -8,8 +8,8 @@ import(
 var targetData NowTarget
 
 func streamingTarget() {
-    var preSystemCpuUsage, preTargetCpuUsage uint64
     for {
+        var preSystemCpuUsage, preTargetCpuUsage uint64
         stats, err := cli.ContainerStats(context.Background(), "target-server", true)
         if err != nil {
             targetData.mu.Lock()
