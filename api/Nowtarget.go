@@ -34,6 +34,12 @@ func streamingTarget() {
                 newSystemCpuUsage := stats.CpuStats.SystemCpuUsage
                 newTargetCpuUsage := stats.CpuStats.CpuUsage.TotalUsage
                 // 2. CPU使用率の計算 (ロックしない)
+                // new-pre<0の場合は初期化
+                if newSystemCpuUsage < preSystemCpuUsage || newTargetCpuUsage < preTargetCpuUsage {
+                    preSystemCpuUsage = 0
+                    preTargetCpuUsage = 0
+                    continue
+                }
                 newCPU := (float64(newTargetCpuUsage-preTargetCpuUsage) / (float64(newSystemCpuUsage-preSystemCpuUsage) * 0.05)) * float64(runtime.NumCPU()) * 100.0
                 // 3. メモリ使用率の計算 (ロックしない)
                 newMemory := float64(stats.MemoryStats.Usage) / float64(stats.MemoryStats.Limit) * 100.0
