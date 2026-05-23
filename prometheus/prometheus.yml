@@ -1,0 +1,8 @@
+# prometheus/prometheus.yml
+global:
+  scrape_interval: 5s # 5秒おきにデータを収集
+
+scrape_configs:
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080'] # docker-compose内で繋がってるので、名前で指定

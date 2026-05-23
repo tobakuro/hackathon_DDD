@@ -23,12 +23,13 @@ services:
     build:
       context: ./target
       dockerfile: Dockerfile
+    container_name: target-server #cAdvisorでアクセスするために固定名を付与
     # リソース制限（攻略難易度の設定）
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: 256M
+          cpus: "0.05"
+          memory: 64M
     networks:
       - game_internal  # 外部遮断ネットワークのみ接続
     restart: "always"      # 倒されたら自動再起動しない（ゲームサーバーが制御）
@@ -45,6 +46,35 @@ services:
       - game_internal # 密室に入らないと標的を殴れません
     depends_on:
       - target-server
+
+  # 監視用のcAdvisorコンテナ
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    container_name: cadvisor
+    ports:
+      - "8081:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - game_external
+# Prometheusコンテナ
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090" # フロントエンドやブラウザからアクセスするためのポート
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro # 設定ファイルをマウント
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus' # データを保存する場所
+      - '--storage.tsdb.retention.time=1h' # ゲーム用なので、過去1時間分のデータだけを保持
+    networks:
+      - game_external # cadvisorや外部と通信するため
 
 networks:
   # ゲームサーバー ↔ ブラウザ間の通信用（外部公開）
