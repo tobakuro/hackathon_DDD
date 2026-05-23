@@ -24,8 +24,8 @@ func registerRoutes() {
 
 // /scale へのリクエストを処理する関数
 func scaleHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "POSTで送ってください", http.StatusMethodNotAllowed)
+	if r.Method != http.MethodPut {
+		http.Error(w, "PUTで送ってください", http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -110,6 +110,11 @@ func attackHandler(w http.ResponseWriter, r *http.Request) {
 
 // NowTargetへのリクエストを処理する関数
 func nowTargetHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "GETで送ってください", http.StatusMethodNotAllowed)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 
 	data := getNowTarget()
@@ -118,6 +123,11 @@ func nowTargetHandler(w http.ResponseWriter, r *http.Request) {
 
 // AttckHistoryへのリクエストを処理する関数
 func attackHistoryHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "GETで送ってください", http.StatusMethodNotAllowed)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 
 	history := getAttackHistory()
