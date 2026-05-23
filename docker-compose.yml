@@ -31,14 +31,14 @@ services:
       - LLAMA_SERVER_PORT=8081
       - LLAMA_SERVER_URL=http://127.0.0.1:8081
       - LLAMA_SERVER_ARGS=--timeout 600
-      - SCREAM_MAX_TOKENS=32
+      - SCREAM_MAX_TOKENS=64
       - SCREAM_TIMEOUT=120s
     # リソース制限（攻略難易度の設定）
     deploy:
       resources:
         limits:
           cpus: "1.0"
-          memory: 3G
+          memory: 0.5G
     volumes:
       - ./models:/models:ro
     networks:

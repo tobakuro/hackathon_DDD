@@ -24,16 +24,16 @@ var hitCount int64
 var screamSeq uint64
 
 type Config struct {
-	ListenAddr        string
-	LlamaServerURL    string
-	LlamaServerBin    string
-	LlamaModelPath    string
-	LlamaServerPort   string
-	LlamaExtraArgs    string
-	ScreamPrompt      string
-	ScreamMaxTokens   int
-	ScreamTimeout     time.Duration
-	FallbackScream    string
+	ListenAddr      string
+	LlamaServerURL  string
+	LlamaServerBin  string
+	LlamaModelPath  string
+	LlamaServerPort string
+	LlamaExtraArgs  string
+	ScreamPrompt    string
+	ScreamMaxTokens int
+	ScreamTimeout   time.Duration
+	FallbackScream  string
 }
 
 type ScreamEvent struct {
@@ -288,25 +288,25 @@ func hitHandler(h *hub, gen ScreamGenerator, cfg Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		current := atomic.AddInt64(&hitCount, 1)
 		log.Printf("ヒット数: %d", current)
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("hit"))
 
 		id := atomic.AddUint64(&screamSeq, 1)
-		go func(screamID uint64, hit int64) {
-			idStr := strconv.FormatUint(screamID, 10)
-			broadcastEvent(h, ScreamEvent{ID: idStr, Type: "start", Hit: hit})
+		idStr := strconv.FormatUint(id, 10)
+		broadcastEvent(h, ScreamEvent{ID: idStr, Type: "start", Hit: current})
 
-			ctx, cancel := context.WithTimeout(context.Background(), cfg.ScreamTimeout)
-			defer cancel()
-			err := gen.Stream(ctx, cfg.ScreamPrompt, cfg.ScreamMaxTokens, func(chunk string) {
-				emitChars(h, idStr, chunk)
-			})
-			if err != nil {
-				broadcastEvent(h, ScreamEvent{ID: idStr, Type: "error", Message: err.Error()})
-				return
-			}
-			broadcastEvent(h, ScreamEvent{ID: idStr, Type: "end"})
-		}(id, current)
+		ctx, cancel := context.WithTimeout(context.Background(), cfg.ScreamTimeout)
+		defer cancel()
+		err := gen.Stream(ctx, cfg.ScreamPrompt, cfg.ScreamMaxTokens, func(chunk string) {
+			emitChars(h, idStr, chunk)
+		})
+		if err != nil {
+			broadcastEvent(h, ScreamEvent{ID: idStr, Type: "error", Message: err.Error()})
+			http.Error(w, "target screamed and failed", http.StatusInternalServerError)
+			return
+		}
+		broadcastEvent(h, ScreamEvent{ID: idStr, Type: "end"})
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("hit"))
 	}
 }
 
