@@ -103,6 +103,8 @@ docker compose up --build
 | `attacker` | 攻撃コンテナ（Go） | 内部のみ |
 | `target-server` | 攻撃対象（ゲームの敵） | 内部のみ |
 
+> Kubernetes環境で動かす場合は [docs/commands.md](./commands.md) の「Kubernetes」セクションを参照してください。
+
 ---
 
 ## STEP 7. Godotプロジェクトを開く（Windows）
