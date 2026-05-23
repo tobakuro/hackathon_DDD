@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b0sqyjy0v2r0q"]
 
-[ext_resource type="Script" uid="uid://cwkthe2g7nnuc" path="res://node_3d.gd" id="1_a202f"]
-[ext_resource type="Script" uid="uid://b5e828y41moyh" path="res://area_3d.gd" id="2_a0tk4"]
+[ext_resource type="Script" uid="uid://gkbuwscmseqn" path="res://node_3d.gd" id="1_a202f"]
+[ext_resource type="Script" uid="uid://bwu8gic52xffx" path="res://area_3d.gd" id="2_a0tk4"]
 [ext_resource type="PackedScene" uid="uid://bigwujfwndedx" path="res://model/moby_dock_docker_whale.glb" id="2_noarx"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_a0tk4"]

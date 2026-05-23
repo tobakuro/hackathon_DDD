@@ -61,4 +61,4 @@ ddd-godot/front/.godot/
 ddd-godot/android/build/
 
 # Godot uid
-*.uid
+*.uid*:Zone.Identifier
