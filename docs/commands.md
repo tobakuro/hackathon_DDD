@@ -76,3 +76,34 @@ docker compose ps
 # ターゲットコンテナのリソース制限確認
 docker inspect hackathon_ddd-target-server-1 | grep -A 10 "HostConfig"
 ```
+
+## Kubernetes
+
+```bash
+# クラスター作成（初回のみ）
+kind create cluster
+
+# クラスター情報確認
+kubectl cluster-info --context kind-kind
+
+# Manifestを適用（ゲーム関連）
+kubectl apply -f manifests/game/
+
+# Manifestを適用（監視スタック）
+kubectl apply -f manifests/monitoring/
+
+# Pod一覧と状態確認
+kubectl get pods
+
+# Pod のログを確認
+kubectl logs -f <pod-name>
+
+# Pod の詳細確認（Liveness Probe状態など）
+kubectl describe pod <pod-name>
+
+# TUIで全リソースを確認
+k9s
+
+# クラスター削除
+kind delete cluster
+```

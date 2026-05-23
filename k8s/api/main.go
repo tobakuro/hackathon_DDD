@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/docker/docker/client"
 	"log"
 	"net/http"
+	"github.com/docker/docker/client"
 )
 
 var cli *client.Client
@@ -15,10 +15,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Dockerクライアントの作成に失敗しました: %v", err)
 	}
-	defer func() { _ = cli.Close() }()
+	defer cli.Close()
 
 	// ターゲットのリソース使用率をストリーミングで取得するゴルーチンを開始
 	go streamingTarget()
+	// IsAliveの変化を監視して自動再起動を発行するゴルーチンを開始
+	go watchIsAlive()
 
 	// HTTPサーバーのルートを登録
 	registerRoutes()

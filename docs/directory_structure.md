@@ -17,10 +17,22 @@
 │   ├── main.go
 │   └── Dockerfile
 │
+├── manifests/               # Kubernetes Manifest
+│   ├── game/                # ゲーム関連Pod
+│   │   ├── attacker-deployment.yaml
+│   │   └── target-server-deployment.yaml
+│   └── monitoring/          # 監視スタック（cAdvisor + Prometheus）
+│       ├── cadvisor-deployment.yaml
+│       ├── cadvisor-service.yaml
+│       ├── cadvisor-claim3-persistentvolumeclaim.yaml
+│       ├── prometheus-deployment.yaml
+│       ├── prometheus-service.yaml
+│       └── prometheus-cm0-configmap.yaml
+│
 ├── docs/                    # ドキュメント
 ├── docker-compose.yml       # コンテナ構成（attacker + target-server）
 ├── go.mod                   # Goモジュール（ルートで一元管理）
-├── devbox.json              # 開発環境（Go・golangci-lint管理）
+├── devbox.json              # 開発環境（Go・kubectl・kind・kompose・k9s・helm管理）
 └── .env.example             # 環境変数サンプル
 ```
 
@@ -32,3 +44,4 @@
 | `api/` | APIサーバー・ゲームロジック | Go |
 | `attacker/` | 攻撃コンテナ（target-server を攻撃） | Go + Docker |
 | `target/` | 攻撃対象（リソース制限付き） | Go + Docker |
+| `manifests/` | Kubernetes Manifest一式 | YAML |

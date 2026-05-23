@@ -3,7 +3,12 @@
   "packages": [
     "git@latest",
     "go@latest",
-    "golangci-lint@latest"
+    "golangci-lint@latest",
+    "kubectl@latest",
+    "kind@latest",
+    "kompose@latest",
+    "k9s@latest",
+    "helm@latest"
   ],
   "shell": {
     "init_hook": [
