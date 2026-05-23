@@ -1,0 +1,42 @@
+services:
+  # ゲームサーバー（Go）
+  game-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      # GoサーバーがDockerを操作できるようにソケットをマウント
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - game_external
+    depends_on:
+      - target-server
+
+  # 攻撃対象サーバー（ゲームの敵）
+  target-server:
+    build:
+      context: ./target
+      dockerfile: Dockerfile
+    # リソース制限（攻略難易度の設定）
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    networks:
+      - game_internal  # 外部遮断ネットワークのみ接続
+    restart: "no"      # 倒されたら自動再起動しない（ゲームサーバーが制御）
+
+networks:
+  # ゲームサーバー ↔ ブラウザ間の通信用（外部公開）
+  game_external:
+    driver: bridge
+
+  # 攻撃コンテナ ↔ ターゲットサーバー間（外部遮断・必須）
+  game_internal:
+    driver: bridge
+    internal: true  # インターネットへの経路を物理的に遮断

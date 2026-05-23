@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://cnqxkvs6itq4w"]
+
+[ext_resource type="Script" uid="uid://cwkthe2g7nnuc" path="res://node_3d.gd" id="1_vwqiv"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_a202f"]
+
+[node name="XROrigin3D" type="XROrigin3D" unique_id=1838473618]
+script = ExtResource("1_vwqiv")
+
+[node name="XRCamera3D" type="XRCamera3D" parent="." unique_id=1596671828]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1409783589]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+mesh = SubResource("BoxMesh_a202f")

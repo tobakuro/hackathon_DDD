@@ -100,7 +100,7 @@ docker compose up --build
 
 | コンテナ | 役割 | ポート |
 |---|---|---|
-| `attacker` | 攻撃コンテナ（Go） | 内部のみ |
+| `game-server` | Goゲームサーバー | 8080 |
 | `target-server` | 攻撃対象（ゲームの敵） | 内部のみ |
 
 ---
@@ -113,11 +113,7 @@ Godot エディタを起動し、`front/` フォルダをプロジェクトと�
 
 ## セットアップ完了
 
-動作確認：
-
-```bash
-docker compose ps
-```
+ブラウザで `http://localhost:8080/health` にアクセスして `ok` と表示されれば、ゲームサーバーが正常に動いています。
 
 ---
 
@@ -138,6 +134,6 @@ Godot エディタは Windows 側で起動してください。
 | 症状 | 確認箇所 |
 |---|---|
 | `docker: command not found` | Docker Desktop の WSL Integration が ON になっているか確認（STEP 1-3） |
-| `docker compose up` でビルドエラー | `attacker/` や `target/` の Dockerfile が存在するか確認 |
+| `docker compose up` でビルドエラー | `server/` や `target/` の Dockerfile が存在するか確認 |
 | Godot で VRM が表示されない | godot-vrm アドオンが有効になっているか確認（STEP 2-2） |
 | WSL2 関連のエラー | [docs/setup_error_handling.md](./setup_error_handling.md) を参照 |

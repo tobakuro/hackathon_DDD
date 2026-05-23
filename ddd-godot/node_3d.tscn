@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://b0sqyjy0v2r0q"]
+
+[ext_resource type="Script" uid="uid://cwkthe2g7nnuc" path="res://node_3d.gd" id="1_a202f"]
+[ext_resource type="Script" uid="uid://b5e828y41moyh" path="res://area_3d.gd" id="2_a0tk4"]
+[ext_resource type="PackedScene" uid="uid://bigwujfwndedx" path="res://model/moby_dock_docker_whale.glb" id="2_noarx"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_a0tk4"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_r3fl7"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_r3fl7"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_r3fl7"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_a0tk4"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_noarx"]
+size = Vector3(10, 0.1, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_a202f"]
+
+[node name="Node3D" type="Node3D" unique_id=1712230379]
+
+[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=1838473618]
+script = ExtResource("1_a202f")
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1596671828]
+
+[node name="LeftHand" type="XRController3D" parent="XROrigin3D" unique_id=1550046526]
+tracker = &"left_hand"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="XROrigin3D/LeftHand" unique_id=822477155]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+mesh = SubResource("BoxMesh_a0tk4")
+
+[node name="Area3D" type="Area3D" parent="XROrigin3D/LeftHand" unique_id=1237848195]
+script = ExtResource("2_a0tk4")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="XROrigin3D/LeftHand/Area3D" unique_id=74839524]
+shape = SubResource("BoxShape3D_r3fl7")
+
+[node name="RightHand" type="XRController3D" parent="XROrigin3D" unique_id=1717411537]
+tracker = &"right_hand"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="XROrigin3D/RightHand" unique_id=203714587]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+mesh = SubResource("BoxMesh_r3fl7")
+
+[node name="Area3D" type="Area3D" parent="XROrigin3D/RightHand" unique_id=699698740]
+script = ExtResource("2_a0tk4")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="XROrigin3D/RightHand/Area3D" unique_id=1354269219]
+shape = SubResource("SphereShape3D_r3fl7")
+
+[node name="Docker_kun" type="StaticBody3D" parent="." unique_id=872380544]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 1.5908341)
+
+[node name="Sketchfab_Scene" parent="Docker_kun" unique_id=215328550 instance=ExtResource("2_noarx")]
+transform = Transform3D(-0.017311009, 0, 0.2995001, 0, 0.29999998, 0, -0.2995001, 0, -0.017311009, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Docker_kun" unique_id=359973036]
+shape = SubResource("SphereShape3D_a0tk4")
+
+[node name="Floor" type="StaticBody3D" parent="." unique_id=106090803]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor" unique_id=340587494]
+mesh = SubResource("BoxMesh_noarx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=104453371]
+shape = SubResource("BoxShape3D_a202f")

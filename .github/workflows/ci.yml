@@ -58,26 +58,26 @@ jobs:
         run: devbox run typecheck
 
   # ----------------------------------------------------------------
-  # Test: 単体・結合テスト + カバレッジ
+  # Test: 現在無効化中（デプロイ環境未整備のため）
   # ----------------------------------------------------------------
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Devbox
-        uses: jetify-com/devbox-install-action@v0.13.0
-        with:
-          enable-cache: true
-      - name: Run tests
-        run: devbox run test
-      - name: Upload coverage
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage
-          path: coverage/
-          if-no-files-found: ignore
+  # test:
+  #   name: Test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Install Devbox
+  #       uses: jetify-com/devbox-install-action@v0.13.0
+  #       with:
+  #         enable-cache: true
+  #     - name: Run tests
+  #       run: devbox run test
+  #     - name: Upload coverage
+  #       if: always()
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: coverage
+  #         path: coverage/
+  #         if-no-files-found: ignore
 
   # ----------------------------------------------------------------
   # Build: ビルドが通ることを確認
@@ -85,7 +85,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint, format, typecheck, test]
+    needs: [lint, format, typecheck]
     steps:
       - uses: actions/checkout@v4
       - name: Install Devbox

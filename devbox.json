@@ -2,15 +2,16 @@
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.7/.schema/devbox.schema.json",
   "packages": [
     "git@latest",
-    "go@latest"
+    "go@latest",
+    "golangci-lint@latest"
   ],
   "shell": {
     "init_hook": [
+      "export PATH=\"$PWD/.devbox/nix/profile/default/bin:$PATH\"",
       "echo '🚀 Devbox shell に入りました'",
       "echo '📖 セットアップ手順は docs/1_setup_devbox.md を参照'",
       "echo '📖 サーバー起動手順は docs/2_setup.md を参照'",
-      "echo '📖 よく使うコマンドは docs/commands.md を参照'",
-      "[ -f server/go.mod ] && (cd server && go mod tidy) || true"
+      "echo '📖 よく使うコマンドは docs/commands.md を参照'"
     ],
     "scripts": {
       "setup": [
@@ -20,25 +21,35 @@
         "echo '【TODO】開発サーバー起動コマンドをここに記載'"
       ],
       "build": [
-        "echo '【TODO】ビルドコマンドをここに記載'"
+        "go build ./api/... ./attacker/..."
       ],
       "test": [
-        "echo '【TODO】テストコマンドをここに記載 (例: pnpm test --coverage)'"
+        "echo '=== [1/5] コンテナをビルド & 起動 (attacker x3) ===' && docker compose up --build --scale attacker=3 -d",
+        "echo '--- 起動待機 (3秒) ---' && sleep 3",
+        "echo '=== 起動ログ ===' && docker compose logs",
+        "echo '=== [2/5] 司令塔 API 起動 (port 9000) ===' && (go run api/main.go & echo $! > /tmp/hackathon_api_pid) && sleep 2",
+        "echo '=== [3/5] attacker x3 にスケール ===' && curl -sf -X POST http://localhost:9000/scale -H 'Content-Type: application/json' -d '{\"count\":3}' && echo",
+        "sleep 2",
+        "echo '=== [4/5] target-server に 5 回攻撃 ===' && curl -sf -X POST http://localhost:9000/attack -H 'Content-Type: application/json' -d '{\"target\":\"all\",\"count\":5}' && echo",
+        "sleep 2",
+        "echo '=== [5/5] 攻撃後ログ ===' && docker compose logs",
+        "kill $(cat /tmp/hackathon_api_pid 2>/dev/null) 2>/dev/null || true",
+        "docker compose down && echo '=== テスト完了 ==='"
       ],
       "lint": [
-        "echo '【TODO】lintコマンドをここに記載 (例: pnpm lint)'"
+        "golangci-lint run ./api/... ./attacker/..."
       ],
       "lint:fix": [
-        "echo '【TODO】lint自動修正コマンドをここに記載'"
+        "golangci-lint run --fix ./api/... ./attacker/..."
       ],
       "format": [
-        "echo '【TODO】formatコマンドをここに記載 (例: pnpm prettier --write .)'"
+        "gofmt -w ./api ./attacker"
       ],
       "format:check": [
-        "echo '【TODO】formatチェックコマンドをここに記載 (例: pnpm prettier --check .)'"
+        "test -z \"$(gofmt -l ./api ./attacker)\" || (gofmt -l ./api ./attacker && exit 1)"
       ],
       "typecheck": [
-        "echo '【TODO】型チェックコマンドをここに記載 (例: pnpm tsc --noEmit)'"
+        "go vet ./api/... ./attacker/..."
       ]
     }
   },

@@ -33,11 +33,11 @@ func main() {
 				log.Printf("攻撃失敗: %v\n", err)
 			} else {
 				log.Printf("攻撃成功(ステータス: %d)\n", resp.StatusCode)
-				resp.Body.Close()
+				defer func() { _ = resp.Body.Close() }()
 			}
 		}
 
-		fmt.Fprintf(w, "%d 回の攻撃、完了しました。\n", count)
+		_, _ = fmt.Fprintf(w, "%d 回の攻撃、完了しました。\n", count)
 	})
 
 	log.Println("攻撃用コンテナ、命令待機中です（ポート80で待機）")
