@@ -1,6 +1,6 @@
 extends Node3D
 
-@export var websocket_url := "ws://192.168.0.245:8082/ws"
+@export var websocket_url := "ws://localhost:8082/ws"
 @export var dock_path: NodePath = NodePath("../Docker_kun")
 @export var cleanup_delay := 1.0
 @export var reconnect_delay := 2.0
@@ -18,6 +18,7 @@ extends Node3D
 var _socket := WebSocketPeer.new()
 var _bubbles: Dictionary = {}
 var _reconnect_cooldown := 0.0
+var _was_socket_open := false
 
 # Local alignment constants (use integers to avoid missing identifier issues in some analyzers)
 const HA_CENTER := 1
@@ -26,11 +27,13 @@ const VA_CENTER := 1
 
 func _ready():
 	randomize()
+	websocket_url = _resolve_websocket_url()
 	_try_connect()
 
 
 func _process(delta):
 	_socket.poll()
+	_sync_socket_state_log()
 	_handle_packets()
 	_handle_reconnect(delta)
 
@@ -45,13 +48,24 @@ func _try_connect():
 		_reconnect_cooldown = reconnect_delay
 		return
 
-	print("WebSocket接続開始: ", websocket_url)
+
+func _resolve_websocket_url() -> String:
+	var env_url := str(OS.get_environment("SCREAM_WEBSOCKET_URL")).strip_edges()
+	if not env_url.is_empty():
+		return env_url
+
+	var project_url := str(ProjectSettings.get_setting("application/config/scream_websocket_url", "")).strip_edges()
+	if not project_url.is_empty():
+		return project_url
+
+	return websocket_url
 
 
 func _handle_reconnect(delta):
 	var state := _socket.get_ready_state()
 	if state == WebSocketPeer.STATE_OPEN:
 		_reconnect_cooldown = 0.0
+		_was_socket_open = true
 		return
 
 	if state == WebSocketPeer.STATE_CONNECTING:
@@ -62,6 +76,13 @@ func _handle_reconnect(delta):
 		return
 
 	_try_connect()
+
+
+func _sync_socket_state_log():
+	var is_open := _socket.get_ready_state() == WebSocketPeer.STATE_OPEN
+	if is_open and not _was_socket_open:
+		print("WebSocket接続確立: ", websocket_url)
+	_was_socket_open = is_open
 
 
 func _handle_packets():

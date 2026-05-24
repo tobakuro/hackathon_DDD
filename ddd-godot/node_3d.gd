@@ -1,6 +1,6 @@
 extends XROrigin3D
 
-@export var backend_host := "192.168.0.245"
+@export var backend_host := "localhost"
 @export var backend_port := 9000
 @export var scale_proxy_port := 8082
 
@@ -128,11 +128,38 @@ func _request_scale_with_fallback(url: String, count: int, allow_fallback: bool)
 
 
 func _get_api_base_url() -> String:
-	return "http://%s:%d" % [backend_host, backend_port]
+	return "http://%s:%d" % [_resolve_backend_host(), _resolve_backend_port()]
+
+
+func _resolve_backend_host() -> String:
+	var env_host := str(OS.get_environment("BACKEND_HOST")).strip_edges()
+	if not env_host.is_empty():
+		return env_host
+
+	var project_host := str(ProjectSettings.get_setting("application/config/backend_host", "")).strip_edges()
+	if not project_host.is_empty():
+		return project_host
+
+	return backend_host
+
+
+func _resolve_backend_port() -> int:
+	var env_port := str(OS.get_environment("BACKEND_PORT")).strip_edges()
+	if not env_port.is_empty():
+		return int(env_port)
+
+	var project_port := str(ProjectSettings.get_setting("application/config/backend_port", "")).strip_edges()
+	if not project_port.is_empty():
+		return int(project_port)
+
+	if OS.has_feature("android"):
+		return 9001
+
+	return backend_port
 
 
 func _get_scale_proxy_url() -> String:
-	return "http://%s:%d/scale-proxy" % [backend_host, scale_proxy_port]
+	return "http://%s:%d/scale-proxy" % [_resolve_backend_host(), scale_proxy_port]
 
 
 func _on_scale_request_completed(result, response_code, _headers, body, request: HTTPRequest, count: int, url: String, allow_fallback: bool):
