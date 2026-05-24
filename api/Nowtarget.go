@@ -3,11 +3,28 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"runtime"
 	"time"
 )
 
 var targetData NowTarget
+
+// watchIsAlive はIsAliveがfalseになったタイミングでPodの自動再起動を発行する
+func watchIsAlive() {
+	prevAlive := true
+	for {
+		time.Sleep(1 * time.Second)
+		current := getNowTarget()
+		if prevAlive && !current.IsAlive {
+			log.Println("IsAlive=falseを検知。target-serverを自動再起動します")
+			if err := restartTargetServer(); err != nil {
+				log.Printf("自動再起動失敗: %v\n", err)
+			}
+		}
+		prevAlive = current.IsAlive
+	}
+}
 
 func streamingTarget() {
 	for {

@@ -5,13 +5,20 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/filters"
-	"hackathon_DDD/state"
 	"log"
 	"net/http"
 	"os/exec"
+	"path/filepath"
 	"strings"
+
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/util/homedir"
 )
 
 func registerRoutes() {
@@ -134,7 +141,30 @@ func attackHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(history)
 }
 
-// /restart へのリクエストを処理する関数
+// restartTargetServer はtarget-server DeploymentのRolling Restartを発行する共通関数
+func restartTargetServer() error {
+	k8sClient, err := newK8sClient()
+	if err != nil {
+		return fmt.Errorf("Kubernetesクライアント初期化失敗: %w", err)
+	}
+
+	patch := `{"spec":{"template":{"metadata":{"annotations":{"kubectl.kubernetes.io/restartedAt":"` + metav1.Now().UTC().Format("2006-01-02T15:04:05Z") + `"}}}}}`
+	_, err = k8sClient.AppsV1().Deployments("default").Patch(
+		context.Background(),
+		"target-server",
+		types.StrategicMergePatchType,
+		[]byte(patch),
+		metav1.PatchOptions{},
+	)
+	if err != nil {
+		return fmt.Errorf("Deploymentの再起動に失敗: %w", err)
+	}
+
+	log.Println("target-server Deploymentの再起動を発行しました")
+	return nil
+}
+
+// /restart へのリクエストを処理する関数（フロントからの手動呼び出し用）
 func restartHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "POSTで送ってください", http.StatusMethodNotAllowed)
@@ -143,53 +173,33 @@ func restartHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("リスタート命令を受信しました")
 
-	// ここで docker compose down && docker compose up -d を実行
-	cmd := exec.Command("docker", "compose", "down")
-	cmd.Dir = "./"
-	if err := cmd.Run(); err != nil {
-		log.Printf("リスタート失敗: %v\n", err)
-		http.Error(w, "Dockerの操作に失敗しました", http.StatusInternalServerError)
+	if err := restartTargetServer(); err != nil {
+		log.Printf("再起動失敗: %v\n", err)
+		http.Error(w, "Podの再起動に失敗しました", http.StatusInternalServerError)
 		return
 	}
-
-	cmd = exec.Command("docker", "compose", "up", "-d")
-	cmd.Dir = "./"
-	if err := cmd.Run(); err != nil {
-		log.Printf("リスタート失敗: %v\n", err)
-		http.Error(w, "Dockerの操作に失敗しました", http.StatusInternalServerError)
-		return
-	}
-
-	// target-serverコンテナのIDを取得
-	containerID, err := getContainerID("target-server")
-	if err != nil {
-		log.Printf("target-serverコンテナ取得中にエラー: %v\n", err)
-		http.Error(w, "Dockerの操作に失敗しました", http.StatusInternalServerError)
-		return
-	}
-	if containerID == "" {
-		log.Printf("target-serverコンテナが見つかりませんでした\n")
-		http.Error(w, "target-serverコンテナが見つかりませんでした", http.StatusInternalServerError)
-		return
-	}
-	// ステートに保存
-	state.SetContainerID(containerID)
-
-	log.Printf("target-serverコンテナを再起動しました (ID: %s)\n", containerID)
 
 	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(RestartResponse{Message: "コンテナを再起動しました"})
+	_ = json.NewEncoder(w).Encode(RestartResponse{Message: "Podの再起動を開始しました"})
 }
 
-// リスタートの時に使う関数
-func getContainerID(containerName string) (string, error) {
+// Kubernetesクライアントを生成する（クラスター内→クラスター外の順にフォールバック）
+func newK8sClient() (*kubernetes.Clientset, error) {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		kubeconfig := filepath.Join(homedir.HomeDir(), ".kube", "config")
+		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return kubernetes.NewForConfig(config)
+}
 
-	// フィルターの作成 (name=target-server)
+func getContainerID(containerName string) (string, error) {
 	f := filters.NewArgs()
-	// 正確に一致させるために正規表現のアンカーを使用
 	f.Add("name", "^/"+containerName+"$")
 
-	// コンテナ一覧の取得
 	containers, err := cli.ContainerList(context.Background(), container.ListOptions{
 		Filters: f,
 	})
@@ -199,7 +209,7 @@ func getContainerID(containerName string) (string, error) {
 	}
 
 	if len(containers) == 0 {
-		return "", nil // 見つからなかった場合
+		return "", nil
 	}
 
 	return containers[0].ID, nil

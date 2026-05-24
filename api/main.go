@@ -19,6 +19,8 @@ func main() {
 
 	// ターゲットのリソース使用率をストリーミングで取得するゴルーチンを開始
 	go streamingTarget()
+	// IsAliveの変化を監視して自動再起動を発行するゴルーチンを開始
+	go watchIsAlive()
 
 	// HTTPサーバーのルートを登録
 	registerRoutes()
