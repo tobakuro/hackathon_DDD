@@ -21,10 +21,6 @@
 │   ├── main.go
 │   └── Dockerfile
 │
-├── k8s/                     # K8s移行用ソースコード（Docker版と並行管理中）
-│   ├── api/                 # K8s対応版 api（watchIsAlive・restartTargetServer追加済み）
-│   └── target/              # K8s対応版 target（/healthエンドポイント追加済み）
-│
 ├── manifests/               # Kubernetes Manifest
 │   ├── game/                # ゲーム関連Pod
 │   │   ├── attacker-deployment.yaml
@@ -52,5 +48,4 @@
 | `api/` | APIサーバー・ゲームロジック | Go | Docker動作中 |
 | `attacker/` | 攻撃コンテナ（target-server を攻撃） | Go + Docker | Docker動作中 |
 | `target/` | 攻撃対象（リソース制限付き） | Go + Docker | Docker動作中 |
-| `k8s/` | K8s移行用ソースコード | Go | 移行待ち |
 | `manifests/` | Kubernetes Manifest一式 | YAML | target-serverのみ適用中 |
