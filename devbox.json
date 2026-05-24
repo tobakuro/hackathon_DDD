@@ -29,17 +29,16 @@
         "go build ./api/... ./attacker/..."
       ],
       "test": [
-        "echo '=== [1/5] コンテナをビルド & 起動 (attacker x3) ===' && docker compose up --build --scale attacker=3 -d",
-        "echo '--- 起動待機 (3秒) ---' && sleep 3",
-        "echo '=== 起動ログ ===' && docker compose logs",
-        "echo '=== [2/5] 司令塔 API 起動 (port 9000) ===' && (go run api/main.go & echo $! > /tmp/hackathon_api_pid) && sleep 2",
-        "echo '=== [3/5] attacker x3 にスケール ===' && curl -sf -X POST http://localhost:9000/scale -H 'Content-Type: application/json' -d '{\"count\":3}' && echo",
-        "sleep 2",
-        "echo '=== [4/5] target-server に 5 回攻撃 ===' && curl -sf -X POST http://localhost:9000/attack -H 'Content-Type: application/json' -d '{\"target\":\"all\",\"count\":5}' && echo",
-        "sleep 2",
-        "echo '=== [5/5] 攻撃後ログ ===' && docker compose logs",
-        "kill $(cat /tmp/hackathon_api_pid 2>/dev/null) 2>/dev/null || true",
-        "docker compose down && echo '=== テスト完了 ==='"
+        "echo '=== [1/6] イメージをビルドしてkindに読み込み ==='",
+        "docker build -t target-server ./target && docker build -t attacker ./attacker && docker build -t api -f api/Dockerfile .",
+        "kind load docker-image target-server && kind load docker-image attacker && kind load docker-image api",
+        "echo '=== [2/6] monitoring namespace & Pod を起動 ===' && kubectl apply -f manifests/monitoring/namespace.yaml && kubectl apply -f manifests/monitoring/",
+        "echo '=== [3/6] game Pod を起動 ===' && kubectl apply -f manifests/game/",
+        "echo '--- Pod 起動待機 ---' && kubectl wait --for=condition=ready pod -l io.kompose.service=target-server --timeout=60s && kubectl wait --for=condition=ready pod -l io.kompose.service=api --timeout=60s",
+        "echo '=== [4/6] attacker x3 にスケール ===' && kubectl scale deployment attacker --replicas=3 && sleep 3",
+        "echo '=== [5/6] api 経由で 5 回攻撃 ===' && kubectl port-forward svc/api 9000:9000 & PF_PID=$! && sleep 2 && curl -sf -X POST http://localhost:9000/attack -H 'Content-Type: application/json' -d '{\"target\":\"all\",\"count\":5}' && echo && sleep 2 && kill $PF_PID",
+        "echo '=== [6/6] 攻撃後ログ ===' && kubectl logs -l io.kompose.service=target-server --tail=20 && kubectl logs -l io.kompose.service=attacker --tail=20",
+        "kubectl delete -f manifests/game/ && kubectl delete -f manifests/monitoring/ && echo '=== テスト完了 ==='"
       ],
       "lint": [
         "golangci-lint run ./api/... ./attacker/..."
