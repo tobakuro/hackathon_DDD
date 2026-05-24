@@ -36,7 +36,7 @@
         "echo '=== [3/6] game Pod を起動 ===' && kubectl apply -f manifests/game/",
         "echo '--- Pod 起動待機 ---' && kubectl wait --for=condition=ready pod -l io.kompose.service=target-server --timeout=60s && kubectl wait --for=condition=ready pod -l io.kompose.service=api --timeout=60s",
         "echo '=== [4/6] attacker x3 にスケール ===' && kubectl scale deployment attacker --replicas=3 && sleep 3",
-        "echo '=== [5/6] api 経由で 5 回攻撃 ===' && kubectl port-forward svc/api 9000:9000 & PF_PID=$! && sleep 2 && curl -sf -X POST http://localhost:9000/attack -H 'Content-Type: application/json' -d '{\"target\":\"all\",\"count\":5}' && echo && sleep 2 && kill $PF_PID",
+        "echo '=== [5/6] api 経由で 5 回攻撃 & WebSocket疎通確認 ===' && kubectl port-forward svc/api 9000:9000 & PF_PID=$! && kubectl port-forward svc/target-server 8080:8080 & PF_WS_PID=$! && sleep 2 && curl -sf -X POST http://localhost:9000/attack -H 'Content-Type: application/json' -d '{\"target\":\"all\",\"count\":5}' && echo && sleep 2 && (curl -sf --max-time 3 -i -N -H 'Upgrade: websocket' -H 'Connection: Upgrade' -H 'Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==' -H 'Sec-WebSocket-Version: 13' http://localhost:8080/ws 2>&1 | grep -q '101' && echo 'WebSocket: OK') || echo 'WebSocket: FAILED' && kill $PF_PID $PF_WS_PID",
         "echo '=== [6/6] 攻撃後ログ ===' && kubectl logs -l io.kompose.service=target-server --tail=20 && kubectl logs -l io.kompose.service=attacker --tail=20",
         "kubectl delete -f manifests/game/ && kubectl delete -f manifests/monitoring/ && echo '=== テスト完了 ==='"
       ],
