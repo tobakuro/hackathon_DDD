@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine AS go-builder
+FROM golang:1.23-alpine AS go-builder
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
@@ -10,7 +10,7 @@ WORKDIR /src
 RUN apk add --no-cache git build-base cmake linux-headers
 RUN git clone --depth 1 https://github.com/ggerganov/llama.cpp.git .
 RUN cmake -S . -B build -DLLAMA_BUILD_SERVER=ON
-RUN cmake --build build --target llama-server -j 2
+RUN cmake --build build --target llama-server -j 1
 
 FROM alpine:3.20
 WORKDIR /app
