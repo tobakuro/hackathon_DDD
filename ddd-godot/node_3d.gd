@@ -1,5 +1,9 @@
 extends XROrigin3D
 
+@export var backend_host := "192.168.0.245"
+@export var backend_port := 9000
+@export var scale_proxy_port := 8082
+
 @export var move_speed := 2.0
 
 @onready var camera: XRCamera3D = $XRCamera3D
@@ -10,6 +14,8 @@ extends XROrigin3D
 
 var _left_trigger_prev := false
 var _right_trigger_prev := false
+var _grabbed_gopher_count := 0
+var _scale_use_proxy_only := false
 
 
 func _ready():
@@ -85,5 +91,63 @@ func _attach_gopher_to_hand(hand: XRController3D, gopher: StaticBody3D):
 	var grabbed_global := gopher.global_transform
 	gopher.reparent(hand)
 	gopher.global_transform = grabbed_global
+	_grabbed_gopher_count += 1
+	_request_scale(_grabbed_gopher_count)
 
 	print("%s picked by: %s" % [gopher.name, hand.name])
+
+
+func _request_scale(count: int):
+	if _scale_use_proxy_only:
+		_request_scale_with_fallback(_get_scale_proxy_url(), count, false)
+		return
+
+	_request_scale_with_fallback(_get_api_base_url() + "/scale", count, true)
+
+
+func _request_scale_with_fallback(url: String, count: int, allow_fallback: bool):
+	var request := HTTPRequest.new()
+	add_child(request)
+	request.request_completed.connect(_on_scale_request_completed.bind(request, count, url, allow_fallback))
+
+	var headers := ["Content-Type: application/json"]
+	var payload := JSON.stringify({"count": count})
+	var error := request.request(
+		url,
+		headers,
+		HTTPClient.METHOD_PUT,
+		payload
+	)
+
+	if error != OK:
+		print("/scale request failed to send (error: %d, count: %d, url=%s)" % [error, count, url])
+		request.queue_free()
+		if allow_fallback:
+			_scale_use_proxy_only = true
+			_request_scale_via_proxy(count, "send_error_%d" % error)
+
+
+func _get_api_base_url() -> String:
+	return "http://%s:%d" % [backend_host, backend_port]
+
+
+func _get_scale_proxy_url() -> String:
+	return "http://%s:%d/scale-proxy" % [backend_host, scale_proxy_port]
+
+
+func _on_scale_request_completed(result, response_code, _headers, body, request: HTTPRequest, count: int, url: String, allow_fallback: bool):
+	if response_code == 200:
+		print("/scale success: count=%d response=%s" % [count, body.get_string_from_utf8()])
+	else:
+		print("/scale failed: result=%d status=%d count=%d url=%s response=%s" % [result, response_code, count, url, body.get_string_from_utf8()])
+		if allow_fallback:
+			_scale_use_proxy_only = true
+			_request_scale_via_proxy(count, "status_%d_result_%d" % [response_code, result])
+
+	request.queue_free()
+
+
+func _request_scale_via_proxy(count: int, reason: String):
+	var proxy_url := _get_scale_proxy_url()
+	print("Trying /scale proxy fallback: count=%d reason=%s url=%s" % [count, reason, proxy_url])
+	_request_scale_with_fallback(proxy_url, count, false)
