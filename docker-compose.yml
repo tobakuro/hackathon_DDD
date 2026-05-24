@@ -26,6 +26,8 @@ services:
     container_name: target-server #cAdvisorでアクセスするために固定名を付与
     ports:
       - "8082:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       - LLAMA_MODEL_PATH=/models/qwen2.5-0.5b-instruct-q4_k_m.gguf
       - LLAMA_SERVER_PORT=8081
@@ -38,12 +40,17 @@ services:
       - SOUND_CHANNELS=8
       - SOUND_BITS_PER_SAMPLE=24
       - SOUND_MAX_BUFFERS=1000
+      - SOUND_SECONDS=10
+      - SOUND_SR=48000
+      - SOUND_CHANNELS=8
+      - SOUND_BITS_PER_SAMPLE=24
+      - SOUND_MAX_BUFFERS=1000
     # リソース制限（攻略難易度の設定）
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: "335544320"
+          cpus: "1.0"
+          memory: "350M"
     volumes:
       - ./models:/models:ro
     networks:

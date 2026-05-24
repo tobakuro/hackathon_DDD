@@ -276,6 +276,7 @@ func broadcastEvent(h *hub, evt ScreamEvent) {
 	if err != nil {
 		return
 	}
+	log.Printf("ws send: %s", data)
 	h.broadcast <- data
 }
 
