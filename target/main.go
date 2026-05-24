@@ -30,7 +30,6 @@ var screamSeq uint64
 
 type Config struct {
 	ListenAddr      string
-	ControlAPIURL   string
 	LlamaServerURL  string
 	LlamaServerBin  string
 	LlamaModelPath  string
@@ -48,10 +47,6 @@ type ScreamEvent struct {
 	Char    string `json:"char,omitempty"`
 	Message string `json:"message,omitempty"`
 	Hit     int64  `json:"hit,omitempty"`
-}
-
-type ScaleRequest struct {
-	Count int `json:"count"`
 }
 
 type ScreamGenerator interface {
@@ -324,53 +319,9 @@ func hitHandler(h *hub, gen ScreamGenerator, cfg Config) http.HandlerFunc {
 	}
 }
 
-func scaleProxyHandler(cfg Config) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPut && r.Method != http.MethodPost {
-			http.Error(w, "PUT か POST で送ってください", http.StatusMethodNotAllowed)
-			return
-		}
-
-		var req ScaleRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "JSONが不正です", http.StatusBadRequest)
-			return
-		}
-
-		if req.Count < 0 {
-			http.Error(w, "countは0以上にしてください", http.StatusBadRequest)
-			return
-		}
-
-		forwardBody, _ := json.Marshal(req)
-		targetURL := strings.TrimRight(cfg.ControlAPIURL, "/") + "/scale"
-		forwardReq, err := http.NewRequest(http.MethodPut, targetURL, bytes.NewReader(forwardBody))
-		if err != nil {
-			log.Printf("scale-proxy request create failed: %v", err)
-			http.Error(w, "proxy request create failed", http.StatusInternalServerError)
-			return
-		}
-		forwardReq.Header.Set("Content-Type", "application/json")
-
-		client := &http.Client{Timeout: 10 * time.Second}
-		resp, err := client.Do(forwardReq)
-		if err != nil {
-			log.Printf("scale-proxy forward failed: %v", err)
-			http.Error(w, "proxy forward failed", http.StatusBadGateway)
-			return
-		}
-		defer resp.Body.Close()
-
-		responseBody, _ := io.ReadAll(resp.Body)
-		w.WriteHeader(resp.StatusCode)
-		_, _ = w.Write(responseBody)
-	}
-}
-
 func loadConfig() Config {
 	return Config{
 		ListenAddr:      getEnv("LISTEN_ADDR", ":8080"),
-		ControlAPIURL:   getEnv("CONTROL_API_URL", "http://host.docker.internal:9000"),
 		LlamaServerURL:  getEnv("LLAMA_SERVER_URL", "http://127.0.0.1:8081"),
 		LlamaServerBin:  os.Getenv("LLAMA_SERVER_BIN"),
 		LlamaModelPath:  os.Getenv("LLAMA_MODEL_PATH"),
@@ -475,7 +426,6 @@ func main() {
 	gen := newGenerator(cfg)
 
 	http.HandleFunc("/", hitHandler(h, gen, cfg))
-	http.HandleFunc("/scale-proxy", scaleProxyHandler(cfg))
 	http.HandleFunc("/scream/", sound.Handler)
 	http.HandleFunc("/ws", wsHandler(h))
 	http.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
