@@ -1,24 +1,16 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.38.0 (HEAD)
   labels:
     io.kompose.service: cadvisor
   name: cadvisor
+  namespace: monitoring
 spec:
-  replicas: 1
   selector:
     matchLabels:
       io.kompose.service: cadvisor
-  strategy:
-    type: Recreate
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert
-        kompose.version: 1.38.0 (HEAD)
       labels:
         io.kompose.service: cadvisor
     spec:
@@ -29,12 +21,34 @@ spec:
             - containerPort: 8080
               protocol: TCP
           volumeMounts:
-            - mountPath: /var/lib/docker
-              name: cadvisor-claim3
+            - mountPath: /rootfs
+              name: rootfs
               readOnly: true
-      restartPolicy: Always
+            - mountPath: /var/run
+              name: var-run
+              readOnly: true
+            - mountPath: /sys
+              name: sys
+              readOnly: true
+            - mountPath: /var/lib/docker
+              name: docker
+              readOnly: true
+            - mountPath: /dev/disk
+              name: disk
+              readOnly: true
       volumes:
-        - name: cadvisor-claim3
-          persistentVolumeClaim:
-            claimName: cadvisor-claim3
-            readOnly: true
+        - name: rootfs
+          hostPath:
+            path: /
+        - name: var-run
+          hostPath:
+            path: /var/run
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: docker
+          hostPath:
+            path: /var/lib/docker
+        - name: disk
+          hostPath:
+            path: /dev/disk

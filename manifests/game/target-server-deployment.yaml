@@ -1,9 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.38.0 (HEAD)
   labels:
     io.kompose.service: target-server
   name: target-server
@@ -14,24 +11,53 @@ spec:
       io.kompose.service: target-server
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert
-        kompose.version: 1.38.0 (HEAD)
       labels:
         io.kompose.service: target-server
     spec:
       containers:
         - image: target-server
           name: target-server
+          imagePullPolicy: Never
+          env:
+            - name: LLAMA_MODEL_PATH
+              value: /models/qwen2.5-0.5b-instruct-q4_k_m.gguf
+            - name: LLAMA_SERVER_PORT
+              value: "8081"
+            - name: LLAMA_SERVER_URL
+              value: http://127.0.0.1:8081
+            - name: LLAMA_SERVER_ARGS
+              value: --timeout 600
+            - name: SCREAM_MAX_TOKENS
+              value: "64"
+            - name: SCREAM_TIMEOUT
+              value: 120s
+            - name: SOUND_SECONDS
+              value: "10"
+            - name: SOUND_SR
+              value: "48000"
+            - name: SOUND_CHANNELS
+              value: "8"
+            - name: SOUND_BITS_PER_SAMPLE
+              value: "24"
+            - name: SOUND_MAX_BUFFERS
+              value: "1000"
           resources:
             limits:
-              cpu: 50m
-              memory: "67108864"
+              cpu: "0.5"
+              memory: "335544320"
+          volumeMounts:
+            - mountPath: /models
+              name: models
+              readOnly: true
           livenessProbe:
             httpGet:
-              path: /health
+              path: /healthz
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 10
             failureThreshold: 3
+      volumes:
+        - name: models
+          hostPath:
+            path: /models
       restartPolicy: Always

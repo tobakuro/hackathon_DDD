@@ -1,12 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.38.0 (HEAD)
   labels:
     io.kompose.service: prometheus
   name: prometheus
+  namespace: monitoring
 spec:
   replicas: 1
   selector:
@@ -16,9 +14,6 @@ spec:
     type: Recreate
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert
-        kompose.version: 1.38.0 (HEAD)
       labels:
         io.kompose.service: prometheus
     spec:

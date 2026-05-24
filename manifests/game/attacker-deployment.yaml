@@ -1,9 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.38.0 (HEAD)
   labels:
     io.kompose.service: attacker
   name: attacker
@@ -14,9 +11,6 @@ spec:
       io.kompose.service: attacker
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert
-        kompose.version: 1.38.0 (HEAD)
       labels:
         io.kompose.service: attacker
     spec:
@@ -26,4 +20,5 @@ spec:
               value: http://target-server:8080
           image: attacker
           name: attacker
+          imagePullPolicy: Never
       restartPolicy: Always
