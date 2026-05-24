@@ -26,12 +26,14 @@ services:
     container_name: target-server #cAdvisorでアクセスするために固定名を付与
     ports:
       - "8082:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       - LLAMA_MODEL_PATH=/models/qwen2.5-0.5b-instruct-q4_k_m.gguf
       - LLAMA_SERVER_PORT=8081
       - LLAMA_SERVER_URL=http://127.0.0.1:8081
       - LLAMA_SERVER_ARGS=--timeout 600
-      - SCREAM_MAX_TOKENS=64
+      - SCREAM_MAX_TOKENS=32
       - SCREAM_TIMEOUT=120s
       - SOUND_SECONDS=10
       - SOUND_SR=48000
@@ -43,7 +45,7 @@ services:
       resources:
         limits:
           cpus: "1.0"
-          memory: "335544320"
+          memory: "350M"
     volumes:
       - ./models:/models:ro
     networks:

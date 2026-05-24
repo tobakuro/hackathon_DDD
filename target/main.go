@@ -276,6 +276,7 @@ func broadcastEvent(h *hub, evt ScreamEvent) {
 	if err != nil {
 		return
 	}
+	log.Printf("ws send: %s", data)
 	h.broadcast <- data
 }
 
@@ -288,7 +289,6 @@ func emitChars(h *hub, id string, chunk string) {
 		})
 	}
 }
-
 
 func hitHandler(h *hub, gen ScreamGenerator, cfg Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
@@ -336,7 +336,6 @@ func loadConfig() Config {
 		FallbackScream:  getEnv("FALLBACK_SCREAM", "ギャアアァァ!!"),
 	}
 }
-
 
 func getEnv(key, fallback string) string {
 	value := strings.TrimSpace(os.Getenv(key))

@@ -1,7 +1,7 @@
 extends Area3D
 
-# 司令塔APIのベースURL（docker-compose でホスト側の 9000 番ポートを使用）
-const API_BASE_URL = "http://localhost:9000"
+@export var backend_host: String = "localhost"
+@export var backend_port: int = 9000
 
 # 接触ごとに送る攻撃回数のデフォルト値
 @export var attack_count: int = 10
@@ -56,16 +56,19 @@ func _on_body_entered(body: Node):
 
 
 func call_api(endpoint: String, data: Dictionary):
-	var url = API_BASE_URL + endpoint
+	var url = _get_api_base_url() + endpoint
 	var headers = ["Content-Type: application/json"]
 	var json_str = JSON.stringify(data)
+	var method := HTTPClient.METHOD_POST
+	if endpoint == "/scale":
+		method = HTTPClient.METHOD_PUT
 
-	print("APIリクエスト送信: POST ", url, " ペイロード: ", json_str)
+	print("APIリクエスト送信: method=", method, " url=", url, " ペイロード: ", json_str)
 
 	var error = http_request.request(
 		url,
 		headers,
-		HTTPClient.METHOD_POST,
+		method,
 		json_str
 	)
 
@@ -75,6 +78,37 @@ func call_api(endpoint: String, data: Dictionary):
 
 	_is_requesting = true
 	_cooldown_timer = cooldown_sec
+
+
+func _get_api_base_url() -> String:
+	return "http://%s:%d" % [_resolve_backend_host(), _resolve_backend_port()]
+
+
+func _resolve_backend_host() -> String:
+	var env_host := str(OS.get_environment("BACKEND_HOST")).strip_edges()
+	if not env_host.is_empty():
+		return env_host
+
+	var project_host := str(ProjectSettings.get_setting("application/config/backend_host", "")).strip_edges()
+	if not project_host.is_empty():
+		return project_host
+
+	return backend_host
+
+
+func _resolve_backend_port() -> int:
+	var env_port := str(OS.get_environment("BACKEND_PORT")).strip_edges()
+	if not env_port.is_empty():
+		return int(env_port)
+
+	var project_port := str(ProjectSettings.get_setting("application/config/backend_port", "")).strip_edges()
+	if not project_port.is_empty():
+		return int(project_port)
+
+	if OS.has_feature("android"):
+		return 9001
+
+	return backend_port
 
 
 func _on_request_completed(result, response_code, _headers, body):
