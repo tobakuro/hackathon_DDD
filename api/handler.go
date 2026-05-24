@@ -12,7 +12,10 @@ import (
 	"net/http"
 	"os/exec"
 	"strings"
+	"sync"
 )
+
+var scaleMu sync.Mutex
 
 func registerRoutes() {
 	http.HandleFunc("/scale", scaleHandler)
@@ -36,6 +39,9 @@ func scaleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("命令を受信。攻撃コンテナを %d 個にスケールします。\n", req.Count)
+
+	scaleMu.Lock()
+	defer scaleMu.Unlock()
 
 	// ここで docker compose up --scale attacker=N -d を実行
 	cmd := exec.Command("docker", "compose", "up", "--scale", fmt.Sprintf("attacker=%d", req.Count), "-d")

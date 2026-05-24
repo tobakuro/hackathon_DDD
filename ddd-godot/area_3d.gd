@@ -38,21 +38,38 @@ func _on_body_entered(body: Node):
 		return
 
 	# オブジェクト名に応じてAPIを切り替え
-	match body.name:
-		"Docker_kun":
-			# 全attackerコンテナに攻撃命令
-			call_api(
-				"/attack",
-				{"target": "all", "count": attack_count}
-			)
-		"ScaleTarget":
-			# attackerコンテナをスケール
-			call_api(
-				"/scale",
-				{"count": attack_count}
-			)
-		_:
-			print("未定義のオブジェクト '%s' への接触 — APIはスキップ" % body.name)
+	if _should_trigger_attack(body):
+		# 全attackerコンテナに攻撃命令
+		call_api(
+			"/attack",
+			{"target": "all", "count": attack_count}
+		)
+	elif body.name == "ScaleTarget":
+		# attackerコンテナをスケール
+		call_api(
+			"/scale",
+			{"count": attack_count}
+		)
+	else:
+		print("未定義のオブジェクト '%s' への接触 — APIはスキップ" % body.name)
+
+
+func _should_trigger_attack(body: Node) -> bool:
+	if body.name == "Docker_kun":
+		return true
+
+	if not str(body.name).begins_with("GoGopher"):
+		return false
+
+	var parent := body.get_parent()
+	if not (parent is XRController3D):
+		return false
+
+	for overlapped_body in get_overlapping_bodies():
+		if overlapped_body.name == "Docker_kun":
+			return true
+
+	return false
 
 
 func call_api(endpoint: String, data: Dictionary):

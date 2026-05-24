@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://gkbuwscmseqn" path="res://node_3d.gd" id="1_a202f"]
 [ext_resource type="Script" uid="uid://bwu8gic52xffx" path="res://area_3d.gd" id="2_a0tk4"]
 [ext_resource type="PackedScene" uid="uid://bigwujfwndedx" path="res://model/moby_dock_docker_whale.glb" id="2_noarx"]
-[ext_resource type="Script" path="res://scream_display.gd" id="3_scream"]
-[ext_resource type="PackedScene" path="res://model/go_gopher.glb" id="4_gopher"]
+[ext_resource type="Script" uid="uid://dxff8wqhiovaf" path="res://scream_display.gd" id="3_scream"]
+[ext_resource type="PackedScene" uid="uid://38ift65hhe8n" path="res://model/go_gopher.glb" id="4_gopher"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_a0tk4"]
 
@@ -15,22 +15,21 @@
 [sub_resource type="SphereShape3D" id="SphereShape3D_r3fl7"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_a0tk4"]
+margin = 0.0
+radius = 0.44471008
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_gopher"]
+radius = 0.23
 
 [sub_resource type="BoxMesh" id="BoxMesh_noarx"]
 size = Vector3(10, 0.1, 10)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_a202f"]
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_gopher"]
-radius = 0.23
-
 [node name="Node3D" type="Node3D" unique_id=1712230379]
 
 [node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=1838473618]
 script = ExtResource("1_a202f")
-
-[node name="ScreamDisplay" type="Node3D" parent="." unique_id=1890242351]
-script = ExtResource("3_scream")
 
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1596671828]
 
@@ -60,6 +59,9 @@ script = ExtResource("2_a0tk4")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="XROrigin3D/RightHand/Area3D" unique_id=1354269219]
 shape = SubResource("SphereShape3D_r3fl7")
 
+[node name="ScreamDisplay" type="Node3D" parent="." unique_id=1890242351]
+script = ExtResource("3_scream")
+
 [node name="Docker_kun" type="StaticBody3D" parent="." unique_id=872380544]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 1.5908341)
 
@@ -67,186 +69,187 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 1.5908341)
 transform = Transform3D(-0.017311009, 0, 0.2995001, 0, 0.29999998, 0, -0.2995001, 0, -0.017311009, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Docker_kun" unique_id=359973036]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.15915024)
 shape = SubResource("SphereShape3D_a0tk4")
 
-[node name="GoGopher01" type="StaticBody3D" parent="."]
+[node name="GoGopher01" type="StaticBody3D" parent="." unique_id=121688287]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 0.072, -0.2)
 
-[node name="Sketchfab_Scene" parent="GoGopher01" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher01" unique_id=1197298014 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0, 0.214, -0.038, 0, 0.038, 0.214, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher01"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher01" unique_id=267417220]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher02" type="StaticBody3D" parent="."]
+[node name="GoGopher02" type="StaticBody3D" parent="." unique_id=936899436]
 transform = Transform3D(0.7986355, 0, -0.60181504, 0, 1, 0, 0.60181504, 0, 0.7986355, -0.55, 0.168, 1.08)
 
-[node name="Sketchfab_Scene" parent="GoGopher02" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher02" unique_id=101137536 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher02"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher02" unique_id=1366902251]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher03" type="StaticBody3D" parent="."]
+[node name="GoGopher03" type="StaticBody3D" parent="." unique_id=2136256114]
 transform = Transform3D(0.27563736, 0, -0.9612617, 0, 1, 0, 0.9612617, 0, 0.27563736, 0.88, 0.061, 2.23)
 
-[node name="Sketchfab_Scene" parent="GoGopher03" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher03" unique_id=897715240 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.216, 0.029, 0, -0.029, 0.216, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher03"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher03" unique_id=1226807889]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher04" type="StaticBody3D" parent="."]
+[node name="GoGopher04" type="StaticBody3D" parent="." unique_id=2216008]
 transform = Transform3D(-0.35836795, 0, -0.9335804, 0, 1, 0, 0.9335804, 0, -0.35836795, -1.15, 0.176, 1.92)
 
-[node name="Sketchfab_Scene" parent="GoGopher04" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher04" unique_id=732270879 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0.009, 0.215, -0.042, 0.009, 0.042, 0.215, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher04"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher04" unique_id=1405717875]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher05" type="StaticBody3D" parent="."]
+[node name="GoGopher05" type="StaticBody3D" parent="." unique_id=2137947552]
 transform = Transform3D(-0.8480481, 0, -0.52991927, 0, 1, 0, 0.52991927, 0, -0.8480481, 0.62, 0.132, 0.66)
 
-[node name="Sketchfab_Scene" parent="GoGopher05" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher05" unique_id=1440965227 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher05"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher05" unique_id=1735489124]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher06" type="StaticBody3D" parent="."]
+[node name="GoGopher06" type="StaticBody3D" parent="." unique_id=1629444731]
 transform = Transform3D(-0.9961947, 0, 0.087155744, 0, 1, 0, -0.087155744, 0, -0.9961947, -0.18, 0.187, 2.78)
 
-[node name="Sketchfab_Scene" parent="GoGopher06" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher06" unique_id=251622190 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.214, -0.035, 0, 0.035, 0.214, 0, 0, 0.012, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher06"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher06" unique_id=751841963]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher07" type="StaticBody3D" parent="."]
+[node name="GoGopher07" type="StaticBody3D" parent="." unique_id=594324118]
 transform = Transform3D(-0.7431448, 0, 0.6691306, 0, 1, 0, -0.6691306, 0, -0.7431448, 1.35, 0.079, 1.48)
 
-[node name="Sketchfab_Scene" parent="GoGopher07" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher07" unique_id=921185607 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher07"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher07" unique_id=612992017]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher08" type="StaticBody3D" parent="."]
+[node name="GoGopher08" type="StaticBody3D" parent="." unique_id=1419228075]
 transform = Transform3D(-0.190809, 0, 0.98162717, 0, 1, 0, -0.98162717, 0, -0.190809, -0.92, 0.153, 0.38)
 
-[node name="Sketchfab_Scene" parent="GoGopher08" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher08" unique_id=1479947462 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, -0.011, 0.215, 0.039, 0.006, -0.039, 0.215, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher08"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher08" unique_id=1921844972]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher09" type="StaticBody3D" parent="."]
-transform = Transform3D(0.43837115, 0, 0.89879405, 0, 1, 0, -0.89879405, 0, 0.43837115, 0.14, 0.101, 1.02)
+[node name="GoGopher09" type="StaticBody3D" parent="." unique_id=163401853]
+transform = Transform3D(0.43837115, 0, 0.89879405, 0, 1, 0, -0.89879405, 0, 0.43837115, 0.56691724, 0.101, 1.2534597)
 
-[node name="Sketchfab_Scene" parent="GoGopher09" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher09" unique_id=1437848006 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher09"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher09" unique_id=2062601912]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher10" type="StaticBody3D" parent="."]
+[node name="GoGopher10" type="StaticBody3D" parent="." unique_id=464758096]
 transform = Transform3D(0.8910065, 0, 0.4539905, 0, 1, 0, -0.4539905, 0, 0.8910065, -1.62, 0.058, 1.27)
 
-[node name="Sketchfab_Scene" parent="GoGopher10" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher10" unique_id=1427659903 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher10"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher10" unique_id=859295808]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher11" type="StaticBody3D" parent="."]
+[node name="GoGopher11" type="StaticBody3D" parent="." unique_id=1973508088]
 transform = Transform3D(0.95105654, 0, -0.309017, 0, 1, 0, 0.309017, 0, 0.95105654, 1.72, 0.172, 2.08)
 
-[node name="Sketchfab_Scene" parent="GoGopher11" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher11" unique_id=41401788 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.216, 0, -0.03, 0, 0.22, 0, 0.03, 0, 0.216, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher11"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher11" unique_id=2004890557]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher12" type="StaticBody3D" parent="."]
+[node name="GoGopher12" type="StaticBody3D" parent="." unique_id=1054580368]
 transform = Transform3D(0.57357645, 0, -0.81915206, 0, 1, 0, 0.81915206, 0, 0.57357645, -0.25, 0.093, 0.15)
 
-[node name="Sketchfab_Scene" parent="GoGopher12" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher12" unique_id=1619932606 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher12"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher12" unique_id=86682112]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher13" type="StaticBody3D" parent="."]
+[node name="GoGopher13" type="StaticBody3D" parent="." unique_id=166718141]
 transform = Transform3D(-0.034899496, 0, -0.99939084, 0, 1, 0, 0.99939084, 0, -0.034899496, 0.48, 0.165, 2.95)
 
-[node name="Sketchfab_Scene" parent="GoGopher13" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher13" unique_id=872963789 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.214, 0.036, 0, -0.036, 0.214, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher13"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher13" unique_id=521781394]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher14" type="StaticBody3D" parent="."]
+[node name="GoGopher14" type="StaticBody3D" parent="." unique_id=1927326298]
 transform = Transform3D(-0.6293204, 0, -0.777146, 0, 1, 0, 0.777146, 0, -0.6293204, -1.92, 0.074, 1.74)
 
-[node name="Sketchfab_Scene" parent="GoGopher14" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher14" unique_id=835388995 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher14"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher14" unique_id=639112727]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher15" type="StaticBody3D" parent="."]
+[node name="GoGopher15" type="StaticBody3D" parent="." unique_id=1058517556]
 transform = Transform3D(-0.9702957, 0, -0.2419219, 0, 1, 0, 0.2419219, 0, -0.9702957, -0.78, 0.145, 2.45)
 
-[node name="Sketchfab_Scene" parent="GoGopher15" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher15" unique_id=453772935 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher15"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher15" unique_id=1583910141]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher16" type="StaticBody3D" parent="."]
+[node name="GoGopher16" type="StaticBody3D" parent="." unique_id=319401962]
 transform = Transform3D(-0.92050487, 0, 0.39073113, 0, 1, 0, -0.39073113, 0, -0.92050487, 1.08, 0.182, 0.42)
 
-[node name="Sketchfab_Scene" parent="GoGopher16" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher16" unique_id=457223378 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0.009, 0, 0.214, -0.036, -0.009, 0.036, 0.214, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher16"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher16" unique_id=791983224]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher17" type="StaticBody3D" parent="."]
-transform = Transform3D(-0.5, 0, 0.8660254, 0, 1, 0, -0.8660254, 0, -0.5, -0.42, 0.089, 1.55)
+[node name="GoGopher17" type="StaticBody3D" parent="." unique_id=102498395]
+transform = Transform3D(-0.5, 0, 0.8660254, 0, 1, 0, -0.8660254, 0, -0.5, -0.98249316, 0.13951911, 1.3304317)
 
-[node name="Sketchfab_Scene" parent="GoGopher17" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher17" unique_id=1797440543 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher17"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher17" unique_id=1122661258]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher18" type="StaticBody3D" parent="."]
+[node name="GoGopher18" type="StaticBody3D" parent="." unique_id=1128102379]
 transform = Transform3D(0.12186935, 0, 0.99254614, 0, 1, 0, -0.99254614, 0, 0.12186935, 0.96, 0.156, 1.87)
 
-[node name="Sketchfab_Scene" parent="GoGopher18" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher18" unique_id=995125871 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.218, 0, -0.021, 0.003, 0.215, 0.033, 0.021, -0.033, 0.214, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher18"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher18" unique_id=213450203]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher19" type="StaticBody3D" parent="."]
+[node name="GoGopher19" type="StaticBody3D" parent="." unique_id=1872360295]
 transform = Transform3D(0.6946584, 0, 0.7193398, 0, 1, 0, -0.7193398, 0, 0.6946584, -1.28, 0.066, 2.14)
 
-[node name="Sketchfab_Scene" parent="GoGopher19" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher19" unique_id=1846552803 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher19"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher19" unique_id=1056778470]
 shape = SubResource("SphereShape3D_gopher")
 
-[node name="GoGopher20" type="StaticBody3D" parent="."]
+[node name="GoGopher20" type="StaticBody3D" parent="." unique_id=2109295316]
 transform = Transform3D(0.98768836, 0, 0.15643446, 0, 1, 0, -0.15643446, 0, 0.98768836, 0.22, 0.193, 2.42)
 
-[node name="Sketchfab_Scene" parent="GoGopher20" instance=ExtResource("4_gopher")]
+[node name="Sketchfab_Scene" parent="GoGopher20" unique_id=180673009 instance=ExtResource("4_gopher")]
 transform = Transform3D(0.22, 0, 0, 0, 0.22, 0, 0, 0, 0.22, 0, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher20"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GoGopher20" unique_id=161995197]
 shape = SubResource("SphereShape3D_gopher")
 
 [node name="Floor" type="StaticBody3D" parent="." unique_id=106090803]
