@@ -183,7 +183,7 @@ func newHub() *hub {
 		clients:    make(map[*client]bool),
 		register:   make(chan *client),
 		unregister: make(chan *client),
-		broadcast:  make(chan []byte, 256),
+		broadcast:  make(chan []byte, 1024),
 	}
 }
 
@@ -202,8 +202,7 @@ func (h *hub) run() {
 				select {
 				case c.send <- msg:
 				default:
-					delete(h.clients, c)
-					close(c.send)
+					log.Printf("ws client is slow; dropping message instead of disconnecting")
 				}
 			}
 		}
@@ -281,13 +280,14 @@ func broadcastEvent(h *hub, evt ScreamEvent) {
 }
 
 func emitChars(h *hub, id string, chunk string) {
-	for _, r := range []rune(chunk) {
-		broadcastEvent(h, ScreamEvent{
-			ID:   id,
-			Type: "char",
-			Char: string(r),
-		})
+	if chunk == "" {
+		return
 	}
+	broadcastEvent(h, ScreamEvent{
+		ID:   id,
+		Type: "char",
+		Char: chunk,
+	})
 }
 
 func hitHandler(h *hub, gen ScreamGenerator, cfg Config) http.HandlerFunc {

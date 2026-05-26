@@ -5,14 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/filters"
 	"hackathon_DDD/state"
 	"log"
 	"net/http"
 	"os/exec"
 	"strings"
 	"sync"
+
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
 )
 
 var scaleMu sync.Mutex

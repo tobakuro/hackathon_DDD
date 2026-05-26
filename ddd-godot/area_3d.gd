@@ -4,7 +4,7 @@ extends Area3D
 @export var backend_port: int = 9000
 
 # 接触ごとに送る攻撃回数のデフォルト値
-@export var attack_count: int = 10
+@export var attack_count: int = 1
 
 # クールダウン時間（秒）: 短時間の連続接触でAPIを連打しないよう制御
 @export var cooldown_sec: float = 1.0

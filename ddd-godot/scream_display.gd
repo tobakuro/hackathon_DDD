@@ -39,8 +39,11 @@ func _process(delta):
 
 
 func _try_connect():
-	if _socket.get_ready_state() == WebSocketPeer.STATE_CONNECTING:
+	var state := _socket.get_ready_state()
+	if state == WebSocketPeer.STATE_CONNECTING or state == WebSocketPeer.STATE_OPEN:
 		return
+
+	_socket = WebSocketPeer.new()
 
 	var error := _socket.connect_to_url(websocket_url)
 	if error != OK:

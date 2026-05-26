@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bigwujfwndedx" path="res://model/moby_dock_docker_whale.glb" id="2_noarx"]
 [ext_resource type="Script" uid="uid://dxff8wqhiovaf" path="res://scream_display.gd" id="3_scream"]
 [ext_resource type="PackedScene" uid="uid://38ift65hhe8n" path="res://model/go_gopher.glb" id="4_gopher"]
+[ext_resource type="Script" path="res://now_target_display.gd" id="5_now_target"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_a0tk4"]
 
@@ -32,6 +33,10 @@ size = Vector3(10, 0.1, 10)
 script = ExtResource("1_a202f")
 
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1596671828]
+
+[node name="NowTargetDisplay" type="Label3D" parent="XROrigin3D/XRCamera3D"]
+script = ExtResource("5_now_target")
+position = Vector3(0, 0.06, -1.5)
 
 [node name="LeftHand" type="XRController3D" parent="XROrigin3D" unique_id=1550046526]
 tracker = &"left_hand"
