@@ -35,7 +35,7 @@ jobs:
           echo "::warning::CodeQL: matrix.language が空です。codeql.yml の language を設定してください。"
           exit 1
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
